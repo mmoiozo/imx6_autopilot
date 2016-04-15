@@ -237,7 +237,7 @@ void uart_read_nc(char *received)
                             fprintf(fp,"%i bytes read :\n", rx_length);
                             for(int i = 0;i<rx_length;i++)
                             {
-                                fprintf(fp,"%d", 1, rx_buffer);
+                                fprintf(fp,"%d/",rx_buffer[i]);
                             }
                             fprintf(fp,">end\n");
                             fprintf(fp,"ack: %d\n",bytes_received);

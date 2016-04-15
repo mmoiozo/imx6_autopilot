@@ -19,6 +19,10 @@
  uint8_t gain_P_Z = 0;
  uint8_t gain_i_Z = 0;
 
+ float x_control = 0;
+ float y_control = 0;
+ float z_control = 0;
+ 
 
 void PID_stabilisation(double delta_t)
 {
@@ -26,6 +30,10 @@ void PID_stabilisation(double delta_t)
     uint16_t motor_2 = 0;//left front
     uint16_t motor_3 = 0;//left back
     uint16_t motor_4 = 0;//right back
+    
+    
+    
+    x_control = command_angle_x;// comp_angle_x - command_angle_x;
     
     int throttle = 205 + (t_com + 3276)/26;
     if(throttle < 205)throttle = 205;
