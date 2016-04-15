@@ -147,32 +147,32 @@ int main (int   argc, char **argv[])
         //20 HZ loop
         if(elapsed_20 > 0.03)
 	{
-	b++;
-	last_time_20 = (double)(start.tv_sec + start.tv_usec/1000000.0);
-        elapsed_time_20 = elapsed_20;
-        uart_read_nc(&recv);// read to empty buffer
-         send_string("+IPD\r\n");
-        usleep(2000);
-	uart_read_nc(&recv);//try to remove while 
-        if(recv == 1)
-        {
-            //esp8266_send(4);
+            last_time_20 = (double)(start.tv_sec + start.tv_usec/1000000.0);
+            elapsed_time_20 = elapsed_20;
+            uart_read_nc(&recv);// read to empty buffer
+            send_string("+IPD\r\n");
+            usleep(2000);
+            uart_read_nc(&recv);//try to remove while 
+            if(recv == 1)
+            {
+                //esp8266_send(4);
+                
+                int16_t x_angle_d = (comp_angle_x * 10)-900;
+                int16_t y_angle_d = (comp_angle_y * 10)-900;
+                int16_t altitude = (int16_t)(alt);
+                int16_t refresh = loop_rate;
+                int16_t connected = recv;
+                
+                debug_send(x_angle_d,y_angle_d,altitude,refresh,connected);
+                recv = 0;
+                b++;
+            }
+            else if(gain_recv == 1)
+            {
+                gain_send();
+                gain_recv = 0;
+            }
             
-            int16_t x_angle_d = (comp_angle_x * 10)-900;
-            int16_t y_angle_d = (comp_angle_y * 10)-900;
-            int16_t altitude = (int16_t)(alt);
-            int16_t refresh = loop_rate;
-            int16_t connected = recv;
-            
-            debug_send(x_angle_d,y_angle_d,altitude,refresh,connected);
-            recv = 0;
-        }
-        else if(gain_recv == 1)
-        {
-            gain_send();
-            gain_recv = 0;
-        }
-        
         
         }
 
@@ -220,12 +220,12 @@ int main (int   argc, char **argv[])
         */
         //printf("u_temp: %d u_press: %d Altitude: %f \n",temp,press,alt);
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
-        //printf("Complementary filter angle X: %f Y: %f\n",comp_angle_x,comp_angle_y);
-        printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate , curr_time);
+        printf("Complementary filter angle X: %f Y: %f\n",comp_angle_x,comp_angle_y);
+        printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
         
         fp = fopen("log.txt", "a");
           /* write to the file */
-          fprintf(fp,"Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate , curr_time);
+          fprintf(fp,"Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
           /* close the file */
           fclose(fp);
         
@@ -248,32 +248,6 @@ int main (int   argc, char **argv[])
             gps_count +=1;
         }
         
-        if(pwm_count > 4)
-        {
-            if(pwm_direction == 1)
-            {
-                pwm_counter +=1;
-            }
-            else
-            {
-                pwm_counter -=1;
-            }
-            
-            if(pwm_counter>420)
-            {
-                pwm_direction = 0;
-            }
-            if(pwm_counter < 205)
-            {
-                pwm_direction = 1;
-            }
-            //pwm_set_all(pwm_counter,pwm_counter,pwm_counter,pwm_counter);
-            pwm_count = 0;
-        }
-        else
-        {
-            pwm_count +=1;
-        }
         
 	//END MAIN LOOP CODE
 

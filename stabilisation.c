@@ -22,18 +22,21 @@
 
 void PID_stabilisation(double delta_t)
 {
-    uint16_t motor_1 = 0;
-    uint16_t motor_2 = 0;
-    uint16_t motor_3 = 0;
+    uint16_t motor_1 = 0;//right front
+    uint16_t motor_2 = 0;//left front
+    uint16_t motor_3 = 0;//left back
     uint16_t motor_4 = 0;//right back
     
     int throttle = 205 + (t_com + 3276)/26;
-    if(throttle < 0)throttle = 0;
+    if(throttle < 205)throttle = 205;
     
     //get_angles(&comp_angle_x, &comp_angle_y, delta_t);
     
     //pwm_set_all(motor_1,motor_2,motor_3,motor_4);
-    pwm_set_all(205,205,205,throttle );
+    pwm_set_all(throttle,205,205,205 );
+    //pwm_set_all(205,throttle,205,205 );
+    //pwm_set_all(205,205,throttle,205 );
+    //pwm_set_all(205,205,205,throttle );
 }
 
 

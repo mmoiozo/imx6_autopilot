@@ -232,7 +232,14 @@ void uart_read_nc(char *received)
                             /* open the file */
                             fp = fopen("log.txt", "a");
                             /* write to the file */
-                            fprintf(fp,"%i bytes read : %s\n", rx_length, rx_buffer);
+                            //fprintf(fp,"%i bytes read : %s\n", rx_length, rx_buffer);
+                            
+                            fprintf(fp,"%i bytes read :\n", rx_length);
+                            for(int i = 0;i<rx_length;i++)
+                            {
+                                fprintf(fp,"%d", 1, rx_buffer);
+                            }
+                            fprintf(fp,">end\n");
                             fprintf(fp,"ack: %d\n",bytes_received);
                             /* close the file */
                             fclose(fp);
