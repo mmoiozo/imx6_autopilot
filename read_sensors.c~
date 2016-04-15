@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <linux/i2c-dev.h> //i2c
+
+#define MPU_ADDR 0x69//b1101001 (pin AD0 is logic high)
+#define BMP_ADDR 0x77// 1110111
+#define HMC_ADDR 0x1E
+
+char buffer[1];
+char gyro_buffer[14];
+int fd;
+
+void initialize_sensors(int *all_connected)
+{
+	//i2c intialisation
+	*all_connected = 0;
+	fd = open("/dev/i2c-2", O_RDWR);
+
+	if (fd < 0) {
+		printf("Error opening file: %s\n", strerror(errno));
+		return 1;
+	}
+
+	if (ioctl(fd, I2C_SLAVE, MPU_ADDR) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return 1;
+	}
+
+	buffer[0]=117;
+	write(fd, buffer, 1);
+	
+	read(fd, buffer, 1);
+	if(buffer[0] == 0x68){
+	*all_connected += 1;
+	//printf("MPU 6050 IMU connected 0x%02X\n", buffer[0]);
+	}
+	if (ioctl(fd, I2C_SLAVE, MPU_ADDR) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return 1;
+	}
+
+	gyro_buffer[0]=0x6B;
+	gyro_buffer[1]=0x00;
+	write(fd, gyro_buffer, 2);
+
+
+	if (ioctl(fd, I2C_SLAVE, BMP_ADDR) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return 1;
+	}
+
+	buffer[0]=0xD0;
+	write(fd, buffer, 1);
+	
+	read(fd, buffer, 1);
+	if(buffer[0] == 0x55){
+	*all_connected += 1;
+	//printf("BMP 180 pressure sensor connected 0x%02X\n", buffer[0]);
+	}
+
+	if (ioctl(fd, I2C_SLAVE, HMC_ADDR) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return 1;
+	}
+
+	buffer[0]=10;//idenification regiser A 
+	write(fd, buffer, 1);
+	
+	read(fd, buffer, 1);
+	if(buffer[0] == 0x48){//ansci value h = 01001000 0x48
+	*all_connected += 1;
+	printf("HMC 5883l sensor connected 0x%02X\n", buffer[0]);
+	}
+
+
+}

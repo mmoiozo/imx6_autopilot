@@ -1,0 +1,4 @@
+
+extern void initialize_sensors(int *all_connected);
+void initialize_sensors(int all_connected*);//function prototype
+

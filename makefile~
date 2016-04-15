@@ -1,0 +1,11 @@
+CC=gcc
+CFLAGS= $(shell pkg-config gstreamer-1.0 --cflags) 
+DEPS = read_sensors.h
+OBJ = main_ap_loop.o read_sensors.o 
+LIBS= $(shell pkg-config gstreamer-1.0 --libs)
+
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(LIBS)
+
+auto_pilot: $(OBJ)
+	gcc -o $@ $^ $(CFLAGS) $(LIBS)
