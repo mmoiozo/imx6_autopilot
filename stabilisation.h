@@ -12,8 +12,8 @@ extern uint8_t gain_D_Y;
 extern uint8_t gain_P_Z;
 extern uint8_t gain_i_Z;
 
-extern float x_control;
-extern float y_control;
+extern float pitch_control;
+extern float roll_control;
 extern float z_control;
 
 

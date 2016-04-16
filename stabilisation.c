@@ -19,9 +19,12 @@
  uint8_t gain_P_Z = 0;
  uint8_t gain_i_Z = 0;
 
- float x_control = 0;
- float y_control = 0;
+ float pitch_control = 0;
+ float roll_control = 0;
  float z_control = 0;
+ 
+ float prev_error_pitch = 0;
+ float prev_error_roll = 0;
  
 
 void PID_stabilisation(double delta_t)
@@ -34,10 +37,34 @@ void PID_stabilisation(double delta_t)
     float command_angle_pitch = (y_com/100)+90;
     float command_angle_roll = (-x_com/100)+90;
     
-    x_control = command_angle_roll;// comp_angle_x - command_angle_x;
+    pitch_control = command_angle_pitch;
+    roll_control = command_angle_roll;// comp_angle_x - command_angle_x;
+    
+    float error_pitch = comp_angle_pitch - command_angle_pitch;
+    float error_roll = comp_angle_roll - command_angle_roll;
+    
+    float p_cmd_pitch = error_pitch*(gain_P_X/200);
+    float p_cmd_roll = error_roll*(gain_P_Y/200);
+    
+    float i_cmd_pitch += error_pitch*(gain_i_X/200)*delta_t;
+    float i_cmd_roll += error_roll*(gain_i_Y/200)*delta_t;
+    
+    float d_cmd_pitch = ((error_pitch-prev_error_pitch)/delta_t)*(gain_d_X/200);
+    float d_cmd_roll = ((error_roll-prev_error_roll)/delta_t)*(gain_d_Y/200);
+    
+    prev_error_pitch = error_pitch;
+    prev_error_roll = error_roll;
+    
+    pitch_control = p_cmd_pitch + i_cmd_pitch + d_cmd_pitch;
+    roll_control = p_cmd_roll + i_cmd_roll + d_cmd_roll;
     
     int throttle = 205 + (t_com + 3276)/26;
     if(throttle < 205)throttle = 205;
+    
+    motor_1 = throttle + pitch_control + roll_control;
+    motor_2 = throttle + pitch_control - roll_control;
+    motor_3 = throttle - pitch_control - roll_control;
+    motor_3 = throttle - pitch_control + roll_control;
     
     //get_angles(&comp_angle_x, &comp_angle_y, delta_t);
     
