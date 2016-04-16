@@ -13,8 +13,8 @@
     int16_t y_gyro_raw = 0;
     int16_t z_gyro_raw = 0;
     
-    float comp_angle_x = 0;
-    float comp_angle_y = 0;
+    float comp_angle_roll = 0;
+    float comp_angle_pitch = 0;
 
 int read_mpu(int16_t *x_acc, int16_t *y_acc, int16_t *z_acc, int16_t *mpu_temp, int16_t *x_rate, int16_t *y_rate,int16_t *z_rate);
 
@@ -29,7 +29,7 @@ void get_angles(double dt)
     float y_acc_angle = acosf((float)y_acc_raw / angle_vector) * 57.3;
     float z_acc_angle = acosf((float)z_acc_raw / angle_vector) * 57.3;
     
-    comp_angle_x = (0.995 * (comp_angle_x + (((float)x_gyro_raw/131)*dt))) + (0.005 * x_acc_angle);
-    comp_angle_y = (0.995 * (comp_angle_y + (((float)y_gyro_raw/-131)*dt))) + (0.005 * y_acc_angle);
+    comp_angle_roll = (0.995 * (comp_angle_roll + (((float)x_gyro_raw/131)*dt))) + (0.005 * x_acc_angle);
+    comp_angle_pitch = (0.995 * (comp_angle_pitch + (((float)y_gyro_raw/-131)*dt))) + (0.005 * y_acc_angle);
     
 }

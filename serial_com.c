@@ -204,7 +204,8 @@ void uart_read_nc(char *received)
 		char chk_string[7];
                 //unsigned char str_match[7] = "\r\n+IPD,0"; 
                 //unsigned char str_match[16] = {13,10,43,73,80,68,44,48,44,49,50,58,132,122,115,152};//"\r\n+IPD,0" and preamble
-                unsigned char str_match[16] = {43,73,80,68,44,48,44,49,50,58,132,122,115,152};
+                //unsigned char str_match[16] = {43,73,80,68,44,48,44,49,50,58,132,122,115,152};
+                unsigned char str_match[4] = {132,122,115,152};
                 unsigned char str_match_pid[16] = {43,73,80,68,44,48,44,49,50,58,133,123,116,153};
 		int rx_length = 1;
                 FILE *fp;//here???
@@ -228,7 +229,7 @@ void uart_read_nc(char *received)
                             //Bytes received
                             rx_buffer[rx_length] = '\0';
                             //printf("%i bytes read : %s\n", rx_length, rx_buffer);
-                             int bytes_received = memcmp(str_match,rx_buffer,14);//was 16 
+                             int bytes_received = memcmp(str_match,rx_buffer+10,4);//check 
                             /* open the file */
                             fp = fopen("log.txt", "a");
                             /* write to the file */
@@ -265,7 +266,7 @@ void uart_read_nc(char *received)
                                  r_com = (rx_buffer[21] << 8) | rx_buffer[20];
                                 //int throttle = 205 + (t_com + 3276)/26;
                                 
-                                printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
+                                //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
                                 
                                  int x_command = (x_com/20) + 300;
                                 

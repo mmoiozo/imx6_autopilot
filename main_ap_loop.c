@@ -157,8 +157,8 @@ int main (int   argc, char **argv[])
             {
                 //esp8266_send(4);
                 
-                int16_t x_angle_d = (comp_angle_x * 10)-900;
-                int16_t y_angle_d = (comp_angle_y * 10)-900;
+                int16_t x_angle_d = (comp_angle_pitch * 10)-900;
+                int16_t y_angle_d = (comp_angle_roll * 10)-900;
                 int16_t altitude = (int16_t)(alt);
                 int16_t refresh = loop_rate;
                 int16_t connected = recv;
@@ -203,7 +203,7 @@ int main (int   argc, char **argv[])
         alt = 44330*( 1-pow(((double)press/po),0.19029));   
         hmc_read(&mag_x,&mag_y,&mag_z);
         
-        int16_t x_angle_16 =(comp_angle_x * 10)-900;
+        int16_t x_angle_16 =(comp_angle_roll * 10)-900;
         unsigned char first = x_angle_16 & 0xFF;
         unsigned char second = x_angle_16 >> 8;
         uint16_t reconstructed = (second << 8) | first;//(second << 8) | first;
@@ -220,12 +220,12 @@ int main (int   argc, char **argv[])
         */
         //printf("u_temp: %d u_press: %d Altitude: %f \n",temp,press,alt);
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
-        printf("Complementary filter angle X: %f Y: %f\n",comp_angle_x,comp_angle_y);
+        printf("Angle Pitch: %f Roll: %f Control: %f\n",comp_angle_pitch,comp_angle_roll,x_control);
         printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
         
         fp = fopen("log.txt", "a");
           /* write to the file */
-          fprintf(fp,"Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
+          fprintf(fp,"Elapsed long: %f Loop rate com HZ: %f Loop rate Main: %f current time %f \n", elapsed_time_20,loop_rate_20,loop_rate,curr_time);
           /* close the file */
           fclose(fp);
         
