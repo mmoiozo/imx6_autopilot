@@ -26,6 +26,9 @@
  float prev_error_pitch = 0;
  float prev_error_roll = 0;
  
+ float i_cmd_pitch = 0;
+ float i_cmd_roll = 0;
+ 
 
 void PID_stabilisation(double delta_t)
 {
@@ -46,11 +49,11 @@ void PID_stabilisation(double delta_t)
     float p_cmd_pitch = error_pitch*(gain_P_X/200);
     float p_cmd_roll = error_roll*(gain_P_Y/200);
     
-    float i_cmd_pitch += error_pitch*(gain_i_X/200)*delta_t;
-    float i_cmd_roll += error_roll*(gain_i_Y/200)*delta_t;
+    i_cmd_pitch += error_pitch*(gain_i_X/200)*delta_t;
+    i_cmd_roll += error_roll*(gain_i_Y/200)*delta_t;
     
-    float d_cmd_pitch = ((error_pitch-prev_error_pitch)/delta_t)*(gain_d_X/200);
-    float d_cmd_roll = ((error_roll-prev_error_roll)/delta_t)*(gain_d_Y/200);
+    float d_cmd_pitch = ((error_pitch-prev_error_pitch)/delta_t)*(gain_D_X/200);
+    float d_cmd_roll = ((error_roll-prev_error_roll)/delta_t)*(gain_D_Y/200);
     
     prev_error_pitch = error_pitch;
     prev_error_roll = error_roll;

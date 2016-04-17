@@ -169,6 +169,7 @@ int main (int   argc, char **argv[])
             }
             else if(gain_recv == 1)
             {
+                printf("send x_p: %d x_i: %d x_d: %d y_p: %d\n",gain_P_X,gain_i_X,gain_D_X,gain_P_Y);
                 gain_send();
                 gain_recv = 0;
             }
@@ -220,8 +221,9 @@ int main (int   argc, char **argv[])
         */
         //printf("u_temp: %d u_press: %d Altitude: %f \n",temp,press,alt);
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
-        printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
         printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
+        printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
+        
         
         fp = fopen("log.txt", "a");
           /* write to the file */

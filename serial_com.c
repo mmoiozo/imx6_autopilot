@@ -285,7 +285,7 @@ void uart_read_nc(char *received)
                             if(bytes_received == 0)
                             {
                                 //esp8266_send(4);
-                                *received = 1;
+                                *received = 0;
                                 //printf("%i bytes read : %s\n", rx_length, rx_buffer);
                                   //printf("bytes received: %d\n",bytes_received);
                                 
@@ -301,7 +301,8 @@ void uart_read_nc(char *received)
                                 gain_i_Z = rx_buffer[21];
                                 
                                gain_recv = 1;
-                                printf("x_p: %d x_i: %d x_d: %d y_p: %d\n",gain_P_X,gain_i_X,gain_D_X,gain_P_Y);
+                               
+                                
                                 
                     
                             }
