@@ -122,7 +122,7 @@ void uart_init_nc()
         options.c_oflag = 0;
         
         /* set input mode (non-canonical, no echo,...) */
-        options.c_lflag = ICANON;
+        options.c_lflag = 0;//ICANON; //ICANON FOR CANONICAL MODE
          
         options.c_cc[VTIME]    = 0;   /* inter-character timer unused */
         options.c_cc[VMIN]     = 0;   /* blocking read until 5 chars received */
@@ -161,7 +161,7 @@ void uart_send()
 	}
 }
 
-void uart_read()
+void uart_read_simple()
 {
 //----- CHECK FOR ANY RX BYTES -----
 	if (uart0_filestream != -1)
@@ -238,6 +238,103 @@ void uart_read_nc(char *received)
                             fprintf(fp,"%i bytes read :\n", rx_length);
                             for(int i = 0;i<rx_length;i++)
                             {
+                                if(rx_buffer[i]==132 && rx_buffer[i+1]==122 && rx_buffer[i+2]==115 && rx_buffer[i+3]==152)
+                                {
+                                    *received = 1;
+                                 x_com = (rx_buffer[i+5] << 8) | rx_buffer[i+4];
+                                 y_com = (rx_buffer[i+7] << 8) | rx_buffer[i+6];
+                                 t_com = (rx_buffer[i+9] << 8) | rx_buffer[i+8];
+                                 r_com = (rx_buffer[i+11] << 8) | rx_buffer[i+10];
+                                 printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
+                                 fprintf(fp,"ack\n");
+                                 break;
+                                }
+                                fprintf(fp,"%d/",rx_buffer[i]);
+                            }
+                            fprintf(fp,">end\n");
+                           // fprintf(fp,"ack: %d\n",bytes_received);
+                            /* close the file */
+                            fclose(fp);
+                            
+                            
+                            bytes_received = memcmp(str_match_pid,rx_buffer,14);
+                            
+                            if(bytes_received == 0)
+                            {
+                                //esp8266_send(4);
+                                *received = 0;
+                                //printf("%i bytes read : %s\n", rx_length, rx_buffer);
+                                  //printf("bytes received: %d\n",bytes_received);
+                                
+                                  //printf("DATA received\n");
+                                
+                                gain_P_X = rx_buffer[14];
+                                gain_i_X = rx_buffer[15];
+                                gain_D_X = rx_buffer[16];
+                                gain_P_Y = rx_buffer[17];
+                                gain_i_Y = rx_buffer[18];
+                                gain_D_Y = rx_buffer[19];
+                                gain_P_Z = rx_buffer[20];
+                                gain_i_Z = rx_buffer[21];
+                                
+                               gain_recv = 1;
+                               
+                                
+                                
+                    
+                            }
+                            
+                            
+                            
+                    }
+                }//
+	}
+}
+
+void uart_read(char *received)
+{
+//----- CHECK FOR ANY RX BYTES -----
+	if (uart0_filestream != -1)
+	{
+		// Read up to 255 charac1ers from the port if they are there
+		unsigned char rx_buffer[500];//256
+		char chk_string[7];
+                //unsigned char str_match[7] = "\r\n+IPD,0"; 
+                //unsigned char str_match[16] = {13,10,43,73,80,68,44,48,44,49,50,58,132,122,115,152};//"\r\n+IPD,0" and preamble
+                //unsigned char str_match[16] = {43,73,80,68,44,48,44,49,50,58,132,122,115,152};
+                unsigned char str_match[4] = {132,122,115,152};
+                unsigned char str_match_pid[16] = {43,73,80,68,44,48,44,49,50,58,133,123,116,153};
+		int rx_length = 1;
+                FILE *fp;//here???
+                while(rx_length > 0)
+                {
+                    rx_length = read(uart0_filestream, rx_buffer, 500);//255		//Filestream, buffer to store in, number of bytes to 			read (max)
+                    if (rx_length < 0)
+                    {
+                            //An error occured (will occur if there are no bytes)
+                            //printf("read error %d %s\n", errno, strerror(errno));
+                    }
+                    else if (rx_length == 0)
+                    {
+                            //No data waiting
+                        //int w = write(uart0_filestream,"h",1);
+                        //printf("GPS Poked: %d\n",w);
+                        
+                    }
+                    else
+                    {
+                            //Bytes received
+                            rx_buffer[rx_length] = '\0';
+                            //printf("%i bytes read : %s\n", rx_length, rx_buffer);
+                             int bytes_received = memcmp(str_match,rx_buffer+10,4);//check 
+                            /* open the file */
+                            fp = fopen("log.txt", "a");
+                            /* write to the file */
+                            //fprintf(fp,"%i bytes read : %s\n", rx_length, rx_buffer);
+                            
+                            fprintf(fp,"%i bytes read :\n", rx_length);
+                            for(int i = 0;i<rx_length;i++)
+                            {
                                 fprintf(fp,"%d/",rx_buffer[i]);
                             }
                             fprintf(fp,">end\n");
@@ -266,7 +363,7 @@ void uart_read_nc(char *received)
                                  r_com = (rx_buffer[21] << 8) | rx_buffer[20];
                                 //int throttle = 205 + (t_com + 3276)/26;
                                 
-                                //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
+                                printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
                                 
                                  int x_command = (x_com/20) + 300;
                                 

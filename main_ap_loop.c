@@ -222,7 +222,8 @@ int main (int   argc, char **argv[])
         //printf("u_temp: %d u_press: %d Altitude: %f \n",temp,press,alt);
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
         printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
-        printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
+        //printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
+        //printf("Angle Pitch: %f Roll: %f Pitch control: %d Roll control: %d\n",comp_angle_pitch,comp_angle_roll,y_com,x_com);
         
         
         fp = fopen("log.txt", "a");

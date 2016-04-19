@@ -37,8 +37,8 @@ void PID_stabilisation(double delta_t)
     uint16_t motor_3 = 0;//left back
     uint16_t motor_4 = 0;//right back
     
-    float command_angle_pitch = (y_com/100)+90;
-    float command_angle_roll = (-x_com/100)+90;
+    float command_angle_pitch = ((float)y_com)/10;//((float)y_com/100)+90;
+    float command_angle_roll = ((float)x_com)/100;//(-(float)x_com/100)+90;
     
     pitch_control = command_angle_pitch;
     roll_control = command_angle_roll;// comp_angle_x - command_angle_x;
@@ -58,8 +58,8 @@ void PID_stabilisation(double delta_t)
     prev_error_pitch = error_pitch;
     prev_error_roll = error_roll;
     
-    pitch_control = p_cmd_pitch + i_cmd_pitch + d_cmd_pitch;
-    roll_control = p_cmd_roll + i_cmd_roll + d_cmd_roll;
+    //pitch_control = p_cmd_pitch + i_cmd_pitch + d_cmd_pitch;
+    //roll_control = p_cmd_roll + i_cmd_roll + d_cmd_roll;
     
     int throttle = 205 + (t_com + 3276)/26;
     if(throttle < 205)throttle = 205;
