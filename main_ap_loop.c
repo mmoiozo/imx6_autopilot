@@ -17,6 +17,7 @@
 #include "spi_uart.h"//spi to uart driver
 #include "gst_video.h"//
 #include "stabilisation.h"//
+#include "safety.h"//wait for throttle and link lost functions
 
 //#define MPU_ADDR 0x69//b1101001 (pin AD0 is logic high)
 //#define BMP_ADDR 0x77// 1110111
@@ -132,6 +133,9 @@ int main (int   argc, char **argv[])
  float loop_rate = 0;
  char recv = 0;
  double alt = 0;
+ 
+ //SAFETY WAIT FOR THROTTLE SIGNAL AT LOWEST POSITION
+ wait_signal();
  
  while(loop_status == 1)
    {
