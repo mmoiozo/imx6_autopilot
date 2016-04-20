@@ -224,7 +224,7 @@ int main (int   argc, char **argv[])
         printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
         //printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
         //printf("Angle Pitch: %f Roll: %f Pitch control: %d Roll control: %d\n",comp_angle_pitch,comp_angle_roll,y_com,x_com);
-        
+        printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
         
         fp = fopen("log.txt", "a");
           /* write to the file */

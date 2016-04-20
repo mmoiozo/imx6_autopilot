@@ -243,11 +243,11 @@ void uart_read_nc(char *received)
                                     
                                     int16_t chk_sum = (rx_buffer[i+13] << 8) | rx_buffer[i+12];
                                     int16_t sum = 0;
-                                    for(int j = 4;j<12;i++)
+                                    for(int j = 4;j<12;j++)
                                     {
                                        sum += rx_buffer[i+j];
                                     }
-                                  printf("sum: %d chk_sum: %d\n",sum,chk_sum);
+                                  //printf("sum: %d chk_sum: %d\n",sum,chk_sum);
                                   if(sum == chk_sum)
                                   {
                                     *received = 1;
@@ -255,8 +255,36 @@ void uart_read_nc(char *received)
                                     y_com = (rx_buffer[i+7] << 8) | rx_buffer[i+6];
                                     t_com = (rx_buffer[i+9] << 8) | rx_buffer[i+8];
                                     r_com = (rx_buffer[i+11] << 8) | rx_buffer[i+10];
-                                    printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
+                                    //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
                                     fprintf(fp,"ack\n");
+                                    break;
+                                  }
+                                }//pid gains
+                                else if(rx_buffer[i]==133 && rx_buffer[i+1]==123 && rx_buffer[i+2]==116 && rx_buffer[i+3]==153)
+                                {
+                                    //checksum 
+                                    int16_t chk_sum = (rx_buffer[i+13] << 8) | rx_buffer[i+12];
+                                    int16_t sum = 0;
+                                    for(int j = 4;j<12;j++)
+                                    {
+                                       sum += rx_buffer[i+j];
+                                    }
+                                  //printf("sum: %d chk_sum: %d\n",sum,chk_sum);
+                                  if(sum == chk_sum)
+                                  {
+                                    *received = 0;
+                                    gain_P_X = rx_buffer[i+4];
+                                    gain_i_X = rx_buffer[i+5];
+                                    gain_D_X = rx_buffer[i+6];
+                                    gain_P_Y = rx_buffer[i+7];
+                                    gain_i_Y = rx_buffer[i+8];
+                                    gain_D_Y = rx_buffer[i+9];
+                                    gain_P_Z = rx_buffer[i+10];
+                                    gain_i_Z = rx_buffer[i+11];
+                                    
+                                    gain_recv = 1;
+                                    
+                                    fprintf(fp,"ack pid\n");
                                     break;
                                   }
                                 }
