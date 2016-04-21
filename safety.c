@@ -45,6 +45,6 @@ void wait_signal()
             get_angles(elapsed);
             wait_count +=1;
             
-            usleep(50000);//0.25 sec 
+            usleep(10000);//100hz 
     }
 }

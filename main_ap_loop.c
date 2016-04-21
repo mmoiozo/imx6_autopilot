@@ -161,13 +161,15 @@ int main (int   argc, char **argv[])
             {
                 //esp8266_send(4);
                 
-                int16_t x_angle_d = (comp_angle_pitch * 10)-900;
-                int16_t y_angle_d = (comp_angle_roll * 10)-900;
+                //int16_t x_angle_d = (comp_angle_pitch * 10)-900;
+                //int16_t y_angle_d = (comp_angle_roll * 10)-900;
+                int16_t pitch_control_d = (int16_t)pitch_control;
+                int16_t roll_control_d = (int16_t)roll_control;
                 int16_t altitude = (int16_t)(alt);
                 int16_t refresh = loop_rate;
                 int16_t connected = recv;
                 
-                debug_send(x_angle_d,y_angle_d,altitude,refresh,connected);
+                debug_send(pitch_control_d,roll_control_d,altitude,refresh,connected);
                 recv = 0;
                 b++;
             }
@@ -227,8 +229,9 @@ int main (int   argc, char **argv[])
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
         printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
         //printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
-        //printf("Angle Pitch: %f Roll: %f Pitch control: %d Roll control: %d\n",comp_angle_pitch,comp_angle_roll,y_com,x_com);
         printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
+        printf("Pitch control: %f Roll control: %f Throttle command: %d Pitch command: %d\n",pitch_control,roll_control,t_com,y_com);
+        //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
         
         fp = fopen("log.txt", "a");
           /* write to the file */
