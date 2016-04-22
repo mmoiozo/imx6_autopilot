@@ -41,8 +41,9 @@ void pca_init(int *pca_success)
         
         //Prescaler 
         pca_buffer[0] = PCA_PRE_SCALE;
-	pca_buffer[1] = 0x79;//121;//presacale value 50hz:121 
+	//pca_buffer[1] = 0x79;//121;//presacale value 50hz:121 
 	//pca_buffer[1] = 0x0E;//presacale value 400hz:14 
+	pca_buffer[1] = 0x1E;//presacale value 200hz:30
 	write(fd_i2c, pca_buffer, 2);
 	usleep(500);
 	read(fd_i2c, pca_buffer, 1);

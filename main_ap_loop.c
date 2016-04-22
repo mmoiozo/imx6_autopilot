@@ -52,7 +52,8 @@ int main (int   argc, char **argv[])
  int16_t mag_y;
  int16_t mag_z;
  
- uint16_t pwm_counter = 205;//250;
+ //uint16_t pwm_counter = 205;//250;
+ uint16_t pwm_counter = 819;//250; 200 hz
  int pwm_count = 0;
  int pwm_direction = 1;
  int gps_count = 0;
