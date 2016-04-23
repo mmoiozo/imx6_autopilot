@@ -18,3 +18,4 @@ extern float z_control;
 
 
 extern void PID_stabilisation(double delta_t);
+extern void PID_cascaded(double delta_t);

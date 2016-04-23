@@ -247,6 +247,7 @@ int main (int   argc, char **argv[])
         //read_mpu(&x_acceleration, &y_acceleration, &z_acceleration, &mpu_temperature, &x_gyro_rate, &y_gyro_rate, &z_gyro_rate);
         get_angles(elapsed);//get_angles(&comp_angle_x, &comp_angle_y, elapsed);
         PID_stabilisation(elapsed);
+        PID_cascaded(elapsed);
         //pwm_set_all(pwm_counter,pwm_counter,pwm_counter,pwm_counter);
         
         if(gps_count > 12)
