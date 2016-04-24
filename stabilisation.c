@@ -92,7 +92,7 @@ void PID_cascaded(double delta_t)
     uint16_t motor_3 = 0;//left back
     uint16_t motor_4 = 0;//right back
     
-    float command_angle_pitch = (((float)y_com)/100)+90+18.9;//((float)y_com/100)+90;+(1891/100)
+    float command_angle_pitch = (((float)y_com)/100)+90-10;//((float)y_com/100)+90;+(1891/100)
     float command_angle_roll = (((float)x_com)/100)+90;//(-(float)x_com/100)+90;
     
     float command_rate_pitch = (((float)y_com)/1);//no scaling 30 deg/sec is 30*130=3900 lsb
@@ -106,15 +106,15 @@ void PID_cascaded(double delta_t)
     float p_cmd_pitch = error_pitch*((float)gain_P_Y/1);//was gain_P_X
     float p_cmd_roll = error_roll*((float)gain_P_Y/1);
     
-    i_cmd_pitch += error_pitch*((float)gain_i_X/20)*delta_t;
-    if(i_cmd_pitch > 1200)i_cmd_pitch = 1200;//prevent integral windup
-    if(i_cmd_pitch < -1200)i_cmd_pitch = -1200;
-    i_cmd_roll += error_roll*((float)gain_i_Y/20)*delta_t;
-    if(i_cmd_roll > 1200)i_cmd_roll = 1200;//prevent integral windup
-    if(i_cmd_roll < -1200)i_cmd_roll = -1200;
+    i_cmd_pitch += error_pitch*((float)gain_i_X/200)*delta_t;
+    if(i_cmd_pitch > 40)i_cmd_pitch = 40;//prevent integral windup
+    if(i_cmd_pitch < -40)i_cmd_pitch = -40;
+    i_cmd_roll += error_roll*((float)gain_i_Y/200)*delta_t;
+    if(i_cmd_roll > 40)i_cmd_roll = 40;//prevent integral windup
+    if(i_cmd_roll < -40)i_cmd_roll = -40;
     
     float pitch_control_rate = p_cmd_pitch + i_cmd_pitch;
-    float roll_control_rate = p_cmd_roll + i_cmd_roll;
+    float roll_control_rate =  p_cmd_roll + i_cmd_roll;
     
     //RATE LOOP
     
@@ -124,10 +124,10 @@ void PID_cascaded(double delta_t)
     
     //Outer loop control
     float rate_error_pitch = (float)(-y_gyro_raw) - (-pitch_control_rate) ;
-    float rate_error_roll  = (float)x_gyro_raw - (-roll_control_rate);
+    float rate_error_roll  = (float)x_gyro_raw - (roll_control_rate);
     
     float p_cmd_pitch_r = rate_error_pitch*((float)gain_P_X/2000);
-    float p_cmd_roll_r = rate_error_roll*((float)0/2000);//was gain_P_Y but is now temporary used by outer loop P 
+    float p_cmd_roll_r = rate_error_roll*((float)gain_P_X/2000);//was gain_P_Y but is now temporary used by outer loop P 
     
     float d_cmd_pitch = ((rate_error_pitch-prev_error_pitch)/delta_t)*((float)gain_D_X/20000);
     float d_cmd_roll = ((rate_error_roll-prev_error_roll)/delta_t)*((float)gain_D_Y/20000);

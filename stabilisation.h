@@ -16,6 +16,9 @@ extern float pitch_control;
 extern float roll_control;
 extern float z_control;
 
+extern float i_cmd_pitch;
+extern float i_cmd_roll;
+
 
 extern void PID_stabilisation(double delta_t);
 extern void PID_cascaded(double delta_t);

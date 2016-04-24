@@ -166,7 +166,8 @@ int main (int   argc, char **argv[])
                 //int16_t y_angle_d = (comp_angle_roll * 10)-900;
                 int16_t pitch_control_d = (int16_t)pitch_control;
                 int16_t roll_control_d = (int16_t)roll_control;
-                int16_t altitude = (int16_t)(alt);
+                //int16_t altitude = (int16_t)(alt);i_cmd_pitch
+                int16_t altitude = (int16_t)(i_cmd_pitch);//check integral wind-up  
                 int16_t refresh = loop_rate;
                 int16_t connected = recv;
                 
