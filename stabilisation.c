@@ -129,11 +129,11 @@ void PID_cascaded(double delta_t)
     float rate_error_pitch = (float)(-y_gyro_raw) - (-pitch_control_rate) ;
     float rate_error_roll  = (float)x_gyro_raw - (roll_control_rate);
     
-    float p_cmd_pitch_r = rate_error_pitch*((float)gain_P_X/2000);
-    float p_cmd_roll_r = rate_error_roll*((float)gain_P_Y/2000);//was gain_P_Y but is now temporary used by outer loop P 
+    float p_cmd_pitch_r = rate_error_pitch*((float)gain_P_X/20000);
+    float p_cmd_roll_r = rate_error_roll*((float)gain_P_Y/20000);//was gain_P_Y but is now temporary used by outer loop P 
     
-    float d_cmd_pitch = ((rate_error_pitch-prev_error_pitch)/delta_t)*((float)gain_D_X/20000);
-    float d_cmd_roll = ((rate_error_roll-prev_error_roll)/delta_t)*((float)gain_D_Y/20000);
+    float d_cmd_pitch = ((rate_error_pitch-prev_error_pitch)/delta_t)*((float)gain_D_X/2000000);
+    float d_cmd_roll = ((rate_error_roll-prev_error_roll)/delta_t)*((float)gain_D_Y/2000000);
     
     prev_error_pitch = rate_error_pitch;
     prev_error_roll = rate_error_roll;
@@ -150,7 +150,7 @@ void PID_cascaded(double delta_t)
     motor_4 = throttle - pitch_control + roll_control;
     
     
-   // pwm_set_all(motor_1,motor_2,motor_3,motor_4);
+    pwm_set_all(motor_1,motor_2,motor_3,motor_4);
     //pwm_set_all(throttle,205,205,205 );
     //pwm_set_all(205,throttle,205,205 );
     //pwm_set_all(205,205,throttle,205 );
