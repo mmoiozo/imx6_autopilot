@@ -126,8 +126,8 @@ void PID_cascaded(double delta_t)
     //float rate_error_roll = (float)x_gyro_raw - command_rate_roll;
     
     //Outer loop control
-    float rate_error_pitch = (float)(-y_gyro_raw) - (-pitch_control_rate) ;
-    float rate_error_roll  = (float)x_gyro_raw - (roll_control_rate);
+    float rate_error_pitch = (float)(-y_gyro_raw) - (-pitch_control_rate);
+    float rate_error_roll  = (float)x_gyro_raw - (-roll_control_rate);
     
     float p_cmd_pitch_r = rate_error_pitch*((float)gain_P_X/20000);
     float p_cmd_roll_r = rate_error_roll*((float)gain_P_Y/20000);//was gain_P_Y but is now temporary used by outer loop P 

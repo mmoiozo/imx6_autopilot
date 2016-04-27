@@ -168,8 +168,10 @@ int main (int   argc, char **argv[])
                 int16_t roll_control_d = (int16_t)roll_control;
                 //int16_t altitude = (int16_t)(alt);i_cmd_pitch
                 int16_t altitude = (int16_t)(i_cmd_pitch);//check integral wind-up  
-                int16_t refresh = loop_rate;
-                int16_t connected = recv;
+                //int16_t refresh = loop_rate;
+                int16_t refresh = (int16_t)(i_cmd_roll);
+                //int16_t connected = recv;
+                int16_t connected = loop_rate;
                 
                 debug_send(pitch_control_d,roll_control_d,altitude,refresh,connected);
                 recv = 0;

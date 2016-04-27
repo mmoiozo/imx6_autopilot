@@ -251,7 +251,7 @@ void uart_read_nc(char *received)
                                   if(sum == chk_sum)
                                   {
                                     *received = 1;
-                                    x_com = (rx_buffer[i+5] << 8) | rx_buffer[i+4];
+                                    x_com = -((rx_buffer[i+5] << 8) | rx_buffer[i+4]);//different sign on roll
                                     y_com = (rx_buffer[i+7] << 8) | rx_buffer[i+6];
                                     t_com = (rx_buffer[i+9] << 8) | rx_buffer[i+8];
                                     r_com = (rx_buffer[i+11] << 8) | rx_buffer[i+10];
