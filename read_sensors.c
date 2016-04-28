@@ -419,3 +419,15 @@ void sc16_read()
         
 	
 }
+
+void mpu_init()
+{
+    if (ioctl(fd_i2c, I2C_SLAVE, MPU_ADDR) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return 1;
+	}
+
+	buffer[0]=0x1A;//configuration register
+	buffer[1]=0x03;//2=98hz 3=42hz 4=20hz 5=10hz 6=5hz
+	write(fd_i2c, buffer, 2);
+}

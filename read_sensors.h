@@ -8,3 +8,4 @@ extern int fd_i2c;
 void init_bmp();
 void init_sc16();
 void sc16_read();
+void mpu_init();

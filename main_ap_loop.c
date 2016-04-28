@@ -125,6 +125,7 @@ int main (int   argc, char **argv[])
        init_bmp();
        hmc_init();
        init_sc16();
+       mpu_init();
        
        
  gettimeofday(&start, 0);
