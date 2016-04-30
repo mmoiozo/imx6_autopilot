@@ -97,7 +97,7 @@ int *ptr2 = &argv;
   }
 
   g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.7", NULL);
-  g_object_set (G_OBJECT (videosrc),"pattern", "smpte", "horizontal-speed", 1, NULL);
+  g_object_set (G_OBJECT (videosrc),"pattern", 1, "horizontal-speed", 1, NULL);
   g_object_set (G_OBJECT (videoenc),"idr-interval", 16 ,"quant-param" ,20 , NULL);
 
 

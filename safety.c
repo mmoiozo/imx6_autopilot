@@ -9,7 +9,10 @@
 #include "serial_com.h" //initializing uart
 #include "AHRS.h"//Complementary filter AHRS
 
-
+double start_time = 0;
+double elapsed = 0;
+int waiting = 0;
+int link_status = 2;
 
 void wait_signal()
 {
@@ -47,4 +50,33 @@ void wait_signal()
             
             usleep(10000);//100hz 
     }
+}
+
+void link_check(float data_rate)
+{
+    struct timeval start, stop;
+    if(data_rate < 5 && waiting == 0)//5hz
+    {
+        gettimeofday(&start, 0);
+        start_time =  (double)(start.tv_sec + start.tv_usec/1000000.0);
+        waiting = 1;
+    }
+    else if(data_rate < 5)
+    {
+        gettimeofday(&stop, 0);
+        elapsed = (double)(stop.tv_sec + stop.tv_usec/1000000.0) - start_time;
+        link_status = 1;
+    }
+    else if(data_rate >= 5)
+    {
+        waiting = 0;
+        elapsed = 0;
+        link_status = 0;
+    }
+    
+    if(elapsed > 5)//5 sec
+    {
+        link_status = 2;
+    }
+    
 }

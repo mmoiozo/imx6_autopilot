@@ -199,7 +199,7 @@ void init_bmp()
     
 }
 
-void bmp_get(long *temp, long *pressure)
+int bmp_get(long *temp, long *pressure)
 {
     
     char bmp_buffer[10];
@@ -296,7 +296,7 @@ void hmc_init()
 	write(fd_i2c, buffer, 2);
 }
 
-void hmc_read(int16_t *x_mag, int16_t *y_mag, int16_t *z_mag)
+int hmc_read(int16_t *x_mag, int16_t *y_mag, int16_t *z_mag)
 {
     char hmc_buffer[10];
     
@@ -388,7 +388,7 @@ void init_sc16()
 	
 }
 
-void sc16_read()
+int sc16_read()
 {
     char sc16_buffer[65];
     

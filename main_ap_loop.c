@@ -36,6 +36,7 @@ int main (int   argc, char **argv[])
  int last = 0;
  int b = 0;
  int last_20 = 0;
+ float loop_rate_20 = 0;
  struct timeval start, stop;
  double last_time = 0;
  double elapsed_long = 0;
@@ -159,7 +160,13 @@ int main (int   argc, char **argv[])
             send_string("+IPD\r\n");
             usleep(2000);
             uart_read_nc(&recv);//try to remove while 
-            if(recv == 1)
+           if(recv == 1)
+           {
+               recv = 0;
+               b++;
+           }
+               
+           if(link_status == 1||link_status == 0)    
             {
                 //esp8266_send(4);
                 
@@ -175,10 +182,9 @@ int main (int   argc, char **argv[])
                 int16_t connected = loop_rate;
                 
                 debug_send(pitch_control_d,roll_control_d,altitude,refresh,connected);
-                recv = 0;
-                b++;
             }
-            else if(gain_recv == 1)
+            
+            if(gain_recv == 1)
             {
                 printf("send x_p: %d x_i: %d x_d: %d y_p: %d\n",gain_P_X,gain_i_X,gain_D_X,gain_P_Y);
                 gain_send();
@@ -192,7 +198,7 @@ int main (int   argc, char **argv[])
 	{
 	loop_rate = (a - last)/elapsed_long;
 	last = a;
-        float loop_rate_20 = (b - last_20)/elapsed_long;
+        loop_rate_20 = (b - last_20)/elapsed_long;
 	last_20 = b;
         
 	last_time = (double)(start.tv_sec + start.tv_usec/1000000.0);
@@ -232,17 +238,20 @@ int main (int   argc, char **argv[])
         */
         //printf("u_temp: %d u_press: %d Altitude: %f \n",temp,press,alt);
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
-        printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_time_20,loop_rate_20 , curr_time);
+        printf("Elapsed long: %f Loop rate HZ: %f current time %f link_status: %d \n", elapsed_time_20,loop_rate_20 , curr_time,link_status);
         //printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
         printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
         printf("Pitch control: %f Roll control: %f Throttle command: %d Pitch command: %d\n",pitch_control,roll_control,t_com,y_com);
         //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
         
+        if(link_status == 1||link_status == 2)    
+        {
         fp = fopen("log.txt", "a");
           /* write to the file */
-          fprintf(fp,"Elapsed long: %f Loop rate com HZ: %f Loop rate Main: %f current time %f \n", elapsed_time_20,loop_rate_20,loop_rate,curr_time);
+        fprintf(fp,"Elapsed long: %f Loop rate com HZ: %f Loop rate Main: %f current time %f \n", elapsed_time_20,loop_rate_20,loop_rate,curr_time);
           /* close the file */
-          fclose(fp);
+        fclose(fp);
+        }
         
 	}
 	
@@ -251,7 +260,8 @@ int main (int   argc, char **argv[])
         //read_mpu(&x_acceleration, &y_acceleration, &z_acceleration, &mpu_temperature, &x_gyro_rate, &y_gyro_rate, &z_gyro_rate);
         get_angles(elapsed);//get_angles(&comp_angle_x, &comp_angle_y, elapsed);
         //PID_stabilisation(elapsed);
-        PID_cascaded(elapsed);
+        link_check(loop_rate_20);//check if we have a good signal
+        PID_cascaded(elapsed);//run the cascaded PID loop
         //pwm_set_all(pwm_counter,pwm_counter,pwm_counter,pwm_counter);
         
         if(gps_count > 12)

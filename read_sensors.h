@@ -7,5 +7,7 @@ int read_mpu(int16_t *x_acc, int16_t *y_acc, int16_t *z_acc, int16_t *mpu_temp, 
 extern int fd_i2c;
 void init_bmp();
 void init_sc16();
-void sc16_read();
 void mpu_init();
+int bmp_get(long *temp, long *pressure);
+int hmc_read(int16_t *x_mag, int16_t *y_mag, int16_t *z_mag);
+int sc16_read();

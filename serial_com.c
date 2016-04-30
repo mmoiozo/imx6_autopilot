@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include "PWM.h"//i2c PWM motor control and init
 #include "stabilisation.h"//for pid gains
+#include "safety.h"//check link_status
 
 void uart_init();
 void uart_send();
@@ -211,7 +212,7 @@ void uart_read_nc(char *received)
                 FILE *fp;//here???
                 while(rx_length > 0)
                 {
-                    rx_length = read(uart0_filestream, rx_buffer, 500);//255		//Filestream, buffer to store in, number of bytes to 			read (max)
+                    rx_length = read(uart0_filestream, rx_buffer, 499);//255		//Filestream, buffer to store in, number of bytes to 			read (max)
                     if (rx_length < 0)
                     {
                             //An error occured (will occur if there are no bytes)
@@ -227,15 +228,25 @@ void uart_read_nc(char *received)
                     else
                     {
                             //Bytes received
-                            rx_buffer[rx_length] = '\0';
+                            
                             //printf("%i bytes read : %s\n", rx_length, rx_buffer);
-                             int bytes_received = memcmp(str_match,rx_buffer+10,4);//check 
+                         //    int bytes_received = memcmp(str_match,rx_buffer+10,4);//check 
+                        
+                        if(link_status == 1||link_status == 2)    
+                        {
                             /* open the file */
                             fp = fopen("log.txt", "a");
                             /* write to the file */
-                            //fprintf(fp,"%i bytes read : %s\n", rx_length, rx_buffer);
-                            
                             fprintf(fp,"%i bytes read :\n", rx_length);
+                            for(int i = 0;i<rx_length;i++)
+                            {
+                            fprintf(fp,"%d/",rx_buffer[i]);
+                            }
+                             fprintf(fp,">end\n");
+                           
+                            /* close the file */
+                            fclose(fp);
+                        }
                             for(int i = 0;i<rx_length;i++)
                             {
                                 if(rx_buffer[i]==132 && rx_buffer[i+1]==122 && rx_buffer[i+2]==115 && rx_buffer[i+3]==152)
@@ -256,7 +267,7 @@ void uart_read_nc(char *received)
                                     t_com = (rx_buffer[i+9] << 8) | rx_buffer[i+8];
                                     r_com = (rx_buffer[i+11] << 8) | rx_buffer[i+10];
                                     //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
-                                    fprintf(fp,"ack\n");
+                                   // fprintf(fp,"ack\n");
                                     break;
                                   }
                                 }//pid gains
@@ -286,19 +297,19 @@ void uart_read_nc(char *received)
                                     
                                     gain_recv = 1;
                                     
-                                    fprintf(fp,"ack pid\n");
+                                    //fprintf(fp,"ack pid\n");
                                     break;
                                   }
                                 }
-                                fprintf(fp,"%d/",rx_buffer[i]);
+                                //fprintf(fp,"%d/",rx_buffer[i]);
                             }
-                            fprintf(fp,">end\n");
-                           // fprintf(fp,"ack: %d\n",bytes_received);
+                           // fprintf(fp,">end\n");
+                           
                             /* close the file */
-                            fclose(fp);
+                            //fclose(fp);
                             
                             
-                            bytes_received = memcmp(str_match_pid,rx_buffer,14);
+                            int bytes_received = memcmp(str_match_pid,rx_buffer,14);
                             
                             if(bytes_received == 0)
                             {
@@ -349,7 +360,7 @@ void uart_read(char *received)
                 FILE *fp;//here???
                 while(rx_length > 0)
                 {
-                    rx_length = read(uart0_filestream, rx_buffer, 500);//255		//Filestream, buffer to store in, number of bytes to 			read (max)
+                    rx_length = read(uart0_filestream, rx_buffer, 499);//255		//Filestream, buffer to store in, number of bytes to 			read (max)
                     if (rx_length < 0)
                     {
                             //An error occured (will occur if there are no bytes)
@@ -365,7 +376,7 @@ void uart_read(char *received)
                     else
                     {
                             //Bytes received
-                            rx_buffer[rx_length] = '\0';
+                            //rx_buffer[rx_length] = '\0';
                             //printf("%i bytes read : %s\n", rx_length, rx_buffer);
                              int bytes_received = memcmp(str_match,rx_buffer+10,4);//check 
                             /* open the file */

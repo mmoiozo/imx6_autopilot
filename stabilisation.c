@@ -95,7 +95,7 @@ void PID_cascaded(double delta_t)
     uint16_t motor_3 = 0;//left back
     uint16_t motor_4 = 0;//right back
     
-    float command_angle_pitch = (((float)y_com)/100)+90-10;//((float)y_com/100)+90;+(1891/100)
+    float command_angle_pitch = (((float)y_com)/100)+90+10;//((float)y_com/100)+90;+(1891/100)
     float command_angle_roll = (((float)x_com)/100)+90;//(-(float)x_com/100)+90;
     
     float command_rate_pitch = (((float)y_com)/1);//no scaling 30 deg/sec is 30*130=3900 lsb
@@ -106,8 +106,8 @@ void PID_cascaded(double delta_t)
     float error_pitch = comp_angle_pitch - command_angle_pitch;
     float error_roll = comp_angle_roll - command_angle_roll;
     
-    float p_cmd_pitch = error_pitch*((float)gain_P_X_O/1);//was gain_P_X
-    float p_cmd_roll = error_roll*((float)gain_P_Y_O/1);
+    float p_cmd_pitch = error_pitch*((float)gain_P_X_O*2);//was gain_P_X
+    float p_cmd_roll = error_roll*((float)gain_P_Y_O*2);
     
     i_cmd_pitch += error_pitch*((float)gain_i_X/200)*delta_t;
     if(i_cmd_pitch > 40)i_cmd_pitch = 40;//prevent integral windup
@@ -150,7 +150,7 @@ void PID_cascaded(double delta_t)
     motor_4 = throttle - pitch_control + roll_control;
     
     
-    pwm_set_all(motor_1,motor_2,motor_3,motor_4);
+//pwm_set_all(motor_1,motor_2,motor_3,motor_4);
     //pwm_set_all(throttle,205,205,205 );
     //pwm_set_all(205,throttle,205,205 );
     //pwm_set_all(205,205,throttle,205 );
