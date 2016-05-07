@@ -62,6 +62,8 @@ int main (int   argc, char **argv[])
 // usleep(5000000);//five second wait
  
   int state = 0;
+  
+  //initialize_720p(argc,argv);
   initialize_pipeline(argc,argv);
 
 	//UART initialisation
@@ -166,7 +168,7 @@ int main (int   argc, char **argv[])
                b++;
            }
                
-           if(link_status == 1||link_status == 0)    
+           if(link_status == 1||link_status == 0 && gain_recv == 0)    
             {
                 //esp8266_send(4);
                 

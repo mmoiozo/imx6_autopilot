@@ -150,7 +150,7 @@ void PID_cascaded(double delta_t)
     motor_4 = throttle - pitch_control + roll_control;
     
     
-//pwm_set_all(motor_1,motor_2,motor_3,motor_4);
+    pwm_set_all(motor_1,motor_2,motor_3,motor_4);
     //pwm_set_all(throttle,205,205,205 );
     //pwm_set_all(205,throttle,205,205 );
     //pwm_set_all(205,205,throttle,205 );

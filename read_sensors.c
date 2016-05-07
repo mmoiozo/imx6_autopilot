@@ -428,6 +428,6 @@ void mpu_init()
 	}
 
 	buffer[0]=0x1A;//configuration register
-	buffer[1]=0x03;//2=98hz 3=42hz 4=20hz 5=10hz 6=5hz
+	buffer[1]=0x04;//2=98hz 3=42hz 4=20hz 5=10hz 6=5hz
 	write(fd_i2c, buffer, 2);
 }

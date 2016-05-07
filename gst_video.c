@@ -118,7 +118,7 @@ int *ptr2 = &argv;
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
 
-void initialize_240p(int   argc, char **argv[])
+void initialize_720p(int   argc, char **argv[])
 {
 
  const gchar* nano_str;
@@ -155,6 +155,105 @@ int *ptr2 = &argv;
   
   
  
+  if (!pipeline || !videosrc || !srcq || !bayer || !bayerq || !videoenc
+    || !encq || !parse || !rtp || !sink) {
+    g_printerr ("One element could not be created. Exiting.\n");
+    return -1;
+  }
+
+  g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.7", NULL);
+  g_object_set (G_OBJECT (videosrc),"capture-mode",5, "capture-format", 1,"fps-n",30, NULL);
+  g_object_set (G_OBJECT (videoenc),"idr-interval", 16 ,"quant-param" ,20 , NULL);
+  g_object_set (G_OBJECT (bayer),"fbnum",2, "fbset", 1,"extbuf",1,"red",1.15,"green", 1.0,"blue",1.25,"chrom",140, NULL);
+
+
+ g_bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
+
+  /* we add all elements into the pipeline */
+  gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, bayer, bayerq, videoenc, encq, parse, rtp, sink, NULL);
+  
+  caps_bayer = gst_caps_new_simple ("video/x-bayer","width", G_TYPE_INT, 960,"height", G_TYPE_INT, 720,NULL);
+  caps_raw = gst_caps_new_simple ("video/x-raw","format",G_TYPE_STRING, "I420","width", G_TYPE_INT, 960,"height", G_TYPE_INT, 720,NULL);
+  
+  
+  
+  if(!gst_element_link_filtered(videosrc,srcq, caps_bayer))
+ {
+  gst_object_unref (pipeline);
+  g_critical ("Unable to link csp to tee. check your caps.");
+  return 0;
+ } 
+ 
+ gst_element_link_many (srcq,bayer, NULL);
+ 
+ if(!gst_element_link_filtered(bayer,bayerq, caps_raw))
+ {
+  gst_object_unref (pipeline);
+  g_critical ("Unable to link csp to tee. check your caps.");
+  return 0;
+ } 
+ 
+ 
+ 
+  /* we link the elements together */
+  /*
+  if(!link_elements_with_filter(videosrc, srcq))
+	{
+        g_printerr ("Videosrc and srcq could not be linked.\n");
+        return -1;
+	}
+	*/
+  
+  
+  //gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
+  gst_element_link_many (bayerq, videoenc, encq, parse, rtp, sink, NULL);
+ /* Set the pipeline to "playing" state*/
+  g_print ("Streaming to port: %s\n", argv[1]);
+  gst_element_set_state (pipeline, GST_STATE_PLAYING);
+}
+
+void start_1080p_record(int   argc, char **argv[])
+{
+
+ const gchar* nano_str;
+
+ guint major, minor, micro, nano;
+ 
+ 
+int *ptr2 = &argv;
+ gst_init (&argc, &ptr2);
+
+ gst_version (&major, &minor, &micro, &nano);
+
+ if (nano == 1)
+   nano_str = "(CVS)";
+ else if (nano == 2)
+   nano_str = "(Prerelease)";
+ else
+   nano_str = "";
+   printf ("This program is linked against GStreamer %d.%d.%d %s\n",major, minor, micro, nano_str);
+
+  /* Create gstreamer elements */
+  pipeline = gst_pipeline_new ("video_testsrc");
+  //videosrc = gst_element_factory_make ("videotestsrc", "videosrc");
+  videosrc = gst_element_factory_make ("imxv4l2src", "videosrc");
+  srcq = gst_element_factory_make ("queue", "srcq");
+  //bayer = gst_element_factory_make ("imxbayer", "bayer");
+  bayer1 = gst_element_factory_make ("imxbayer1sthalf", "bayer1");
+  bayer2 = gst_element_factory_make ("imxbayer2ndhalf", "bayer2");
+  bayerq = gst_element_factory_make ("queue", "bayerq");
+  bayerq1 = gst_element_factory_make ("queue", "bayerq1");
+  bayerq2 = gst_element_factory_make ("queue", "bayerq2");
+  videotransform = gst_element_factory_make ("imxipuvideotransform", "videotransform");
+  videoenc = gst_element_factory_make ("imxvpuenc_h264", "videoenc");
+  encq = gst_element_factory_make ("queue", "encq");
+  rawq = gst_element_factory_make ("queue", "rawq");
+  parse = gst_element_factory_make ("h264parse", "parse");
+  mpegmux = gst_element_factory_make ("mpegtsmux", "mpegmux");
+  sink = gst_element_factory_make ("filesink", "sink");
+  
+  
+ 
   if (!pipeline || !videosrc || !srcq || !videoenc
     || !encq || !parse || !rtp || !sink) {
     g_printerr ("One element could not be created. Exiting.\n");
@@ -162,7 +261,9 @@ int *ptr2 = &argv;
   }
 
   g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.7", NULL);
-  g_object_set (G_OBJECT (videosrc),"pattern", "smpte", "horizontal-speed", 1, NULL);
+  g_object_set (G_OBJECT (videosrc),"capture-mode",2, "capture-format", 1,"fps-n",30,"queue-size",10, NULL);
+  g_object_set (G_OBJECT (bayer1),"fbnum",2, "fbset", 1,"extbuf",1,"red",1.15,"green", 1.0,"blue",1.25,"chrom",140, NULL);
+  g_object_set (G_OBJECT (bayer2),"fbnum",2, NULL);
   g_object_set (G_OBJECT (videoenc),"idr-interval", 16 ,"quant-param" ,20 , NULL);
 
 
@@ -171,9 +272,7 @@ int *ptr2 = &argv;
   /* we add all elements into the pipeline */
   gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, bayer, bayerq, videoenc, encq, parse, rtp, sink, NULL);
   
-  caps_bayer = gst_caps_new_simple ("video/x-bayer",
- "width", G_TYPE_INT, 1280,
- "height", G_TYPE_INT, 720,NULL);
+  caps_bayer = gst_caps_new_simple ("video/x-bayer", "width", G_TYPE_INT, 1920, "height", G_TYPE_INT, 1080,NULL);
   
   
   if(!gst_element_link_filtered(videosrc,srcq, caps_bayer))

@@ -201,6 +201,128 @@ void uart_read_nc(char *received)
 	if (uart0_filestream != -1)
 	{
 		// Read up to 255 charac1ers from the port if they are there
+		unsigned char buffer[500];//256
+		unsigned char rx_buffer[1500];
+		char chk_string[7];
+                //unsigned char str_match[7] = "\r\n+IPD,0"; 
+                //unsigned char str_match[16] = {13,10,43,73,80,68,44,48,44,49,50,58,132,122,115,152};//"\r\n+IPD,0" and preamble
+                //unsigned char str_match[16] = {43,73,80,68,44,48,44,49,50,58,132,122,115,152};
+                unsigned char str_match[4] = {132,122,115,152};
+                unsigned char str_match_pid[16] = {43,73,80,68,44,48,44,49,50,58,133,123,116,153};
+		int rx_length = 0;
+                int length = 1;
+                FILE *fp;//here???
+                
+                
+                while(length > 0)
+                {
+                    length = read(uart0_filestream, buffer, 499);//255		//Filestream, buffer to store in, number of bytes to 			read (max)
+                    if (length < 0)
+                    {
+                            //An error occured (will occur if there are no bytes)
+                            //printf("read error %d %s\n", errno, strerror(errno));
+                    }
+                    else if (length == 0)
+                    {
+                            //No data waiting
+                        //int w = write(uart0_filestream,"h",1);
+                        //printf("GPS Poked: %d\n",w);
+                        
+                    }
+                    else if(rx_length+length < 1500)
+                    {
+                        memcpy(rx_buffer+rx_length, buffer, length);
+                        rx_length += length;
+                    }
+                }
+                            //Bytes received
+                            
+                            //printf("%i bytes read : %s\n", rx_length, rx_buffer);
+                         //    int bytes_received = memcmp(str_match,rx_buffer+10,4);//check 
+                        
+                        if(link_status == 1||link_status == 2)    
+                        {
+                            /* open the file */
+                            fp = fopen("log.txt", "a");
+                            /* write to the file */
+                            fprintf(fp,"%i bytes read :\n", rx_length);
+                            for(int i = 0;i<rx_length;i++)
+                            {
+                            fprintf(fp,"%d/",rx_buffer[i]);
+                            }
+                             fprintf(fp,">end\n");
+                           
+                            /* close the file */
+                            fclose(fp);
+                        }
+                        
+                        
+                            for(int i = 0;i<rx_length;i++)
+                            {
+                                if(rx_buffer[i]==132 && rx_buffer[i+1]==122 && rx_buffer[i+2]==115 && rx_buffer[i+3]==152)
+                                {
+                                    
+                                    int16_t chk_sum = (rx_buffer[i+13] << 8) | rx_buffer[i+12];
+                                    int16_t sum = 0;
+                                    for(int j = 4;j<12;j++)
+                                    {
+                                       sum += rx_buffer[i+j];
+                                    }
+                                  //printf("sum: %d chk_sum: %d\n",sum,chk_sum);
+                                  if(sum == chk_sum)
+                                  {
+                                    *received = 1;
+                                    x_com = -((rx_buffer[i+5] << 8) | rx_buffer[i+4]);//different sign on roll
+                                    y_com = (rx_buffer[i+7] << 8) | rx_buffer[i+6];
+                                    t_com = (rx_buffer[i+9] << 8) | rx_buffer[i+8];
+                                    r_com = (rx_buffer[i+11] << 8) | rx_buffer[i+10];
+                                    //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
+                                   // fprintf(fp,"ack\n");
+                                    break;
+                                  }
+                                }//pid gains
+                                else if(rx_buffer[i]==133 && rx_buffer[i+1]==123 && rx_buffer[i+2]==116 && rx_buffer[i+3]==153)
+                                {
+                                    //checksum 
+                                    int16_t chk_sum = (rx_buffer[i+15] << 8) | rx_buffer[i+14];
+                                    int16_t sum = 0;
+                                    for(int j = 4;j<14;j++)
+                                    {
+                                       sum += rx_buffer[i+j];
+                                    }
+                                  //printf("sum: %d chk_sum: %d\n",sum,chk_sum);
+                                  if(sum == chk_sum)
+                                  {
+                                    *received = 0;
+                                    gain_P_X = rx_buffer[i+4];
+                                    gain_i_X = rx_buffer[i+5];
+                                    gain_D_X = rx_buffer[i+6];
+                                    gain_P_Y = rx_buffer[i+7];
+                                    gain_i_Y = rx_buffer[i+8];
+                                    gain_D_Y = rx_buffer[i+9];
+                                    gain_P_Z = rx_buffer[i+10];
+                                    gain_i_Z = rx_buffer[i+11];
+                                    gain_P_X_O = rx_buffer[i+12];
+                                    gain_P_Y_O = rx_buffer[i+13];
+                                    
+                                    gain_recv = 1;
+                                    
+                                    break;
+                                  }
+                                }
+                               
+                            }
+                            
+                    }
+
+}
+/*
+void uart_read_old(char *received)
+{
+//----- CHECK FOR ANY RX BYTES -----
+	if (uart0_filestream != -1)
+	{
+		// Read up to 255 charac1ers from the port if they are there
 		unsigned char rx_buffer[500];//256
 		char chk_string[7];
                 //unsigned char str_match[7] = "\r\n+IPD,0"; 
@@ -227,6 +349,8 @@ void uart_read_nc(char *received)
                     }
                     else
                     {
+                        
+                        
                             //Bytes received
                             
                             //printf("%i bytes read : %s\n", rx_length, rx_buffer);
@@ -234,9 +358,9 @@ void uart_read_nc(char *received)
                         
                         if(link_status == 1||link_status == 2)    
                         {
-                            /* open the file */
+                            // open the file 
                             fp = fopen("log.txt", "a");
-                            /* write to the file */
+                            // write to the file 
                             fprintf(fp,"%i bytes read :\n", rx_length);
                             for(int i = 0;i<rx_length;i++)
                             {
@@ -244,9 +368,11 @@ void uart_read_nc(char *received)
                             }
                              fprintf(fp,">end\n");
                            
-                            /* close the file */
+                            // close the file /
                             fclose(fp);
                         }
+                        
+                        
                             for(int i = 0;i<rx_length;i++)
                             {
                                 if(rx_buffer[i]==132 && rx_buffer[i+1]==122 && rx_buffer[i+2]==115 && rx_buffer[i+3]==152)
@@ -305,7 +431,7 @@ void uart_read_nc(char *received)
                             }
                            // fprintf(fp,">end\n");
                            
-                            /* close the file */
+                            // close the file 
                             //fclose(fp);
                             
                             
@@ -342,7 +468,7 @@ void uart_read_nc(char *received)
                 }//
 	}
 }
-
+*/
 void uart_read(char *received)
 {
 //----- CHECK FOR ANY RX BYTES -----

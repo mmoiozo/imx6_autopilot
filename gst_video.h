@@ -10,11 +10,12 @@
 #include <stdint.h>
 
 void initialize_pipeline(int   argc, char **argv[]);
-void initialize_240p(int   argc, char **argv[]);
+void initialize_720p(int   argc, char **argv[]);
+void start_1080p_record(int   argc, char **argv[]);
 
 gboolean bus_call (GstBus *bus, GstMessage *msg);
 GstBus *g_bus;
 GstMessage *msg;
-GstElement *pipeline, *videosrc, *srcq, *videoenc, *encq, *parse, *rtp, *sink, *bayerq, *bayer, *videotransform;
+GstElement *pipeline, *videosrc, *srcq, *videoenc, *encq, *parse, *rtp, *sink, *bayerq, *bayerq1, *bayerq2, *bayer, *bayer1, *bayer2, *videotransform, *rawq, *mpegmux;
 
- GstCaps *caps_bayer, *caps_720, *caps_240;
+ GstCaps *caps_bayer, *caps_720, *caps_240, *caps_raw;
