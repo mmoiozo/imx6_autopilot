@@ -65,6 +65,7 @@ int main (int   argc, char **argv[])
   
   //initialize_720p(argc,argv);
   initialize_pipeline(argc,argv);
+  //start_1080p_record(argc,argv);
 
 	//UART initialisation
 	//uart_init();
@@ -140,7 +141,7 @@ int main (int   argc, char **argv[])
  double alt = 0;
  
  //SAFETY WAIT FOR THROTTLE SIGNAL AT LOWEST POSITION
- wait_signal();
+ //wait_signal();
  
  while(loop_status == 1)
    {
@@ -154,7 +155,7 @@ int main (int   argc, char **argv[])
         elapsed_20 = curr_time - last_time_20;
 
         //20 HZ loop
-        if(elapsed_20 > 0.03)
+        if(elapsed_20 > 0.05)//wwas 0.03
 	{
             last_time_20 = (double)(start.tv_sec + start.tv_usec/1000000.0);
             elapsed_time_20 = elapsed_20;

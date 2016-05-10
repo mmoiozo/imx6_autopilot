@@ -10,6 +10,8 @@ extern int uart0_filestream;
 char gain_recv;
 void gain_send();
 
+void uart_read_old(char *received);
+
 extern int16_t x_com;
 extern int16_t y_com;
 extern int16_t t_com;

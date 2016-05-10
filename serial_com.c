@@ -17,7 +17,7 @@ char gain_recv = 0;
 
 int16_t x_com = 0;
 int16_t y_com = 0;
-int16_t t_com = 0;//-3276;
+int16_t t_com = -3276;//0
 int16_t r_com = 0;
 
    void uart_init()
@@ -316,7 +316,7 @@ void uart_read_nc(char *received)
                     }
 
 }
-/*
+
 void uart_read_old(char *received)
 {
 //----- CHECK FOR ANY RX BYTES -----
@@ -468,7 +468,7 @@ void uart_read_old(char *received)
                 }//
 	}
 }
-*/
+
 void uart_read(char *received)
 {
 //----- CHECK FOR ANY RX BYTES -----

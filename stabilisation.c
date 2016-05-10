@@ -98,8 +98,8 @@ void PID_cascaded(double delta_t)
     float command_angle_pitch = (((float)y_com)/100)+90+10;//((float)y_com/100)+90;+(1891/100)
     float command_angle_roll = (((float)x_com)/100)+90;//(-(float)x_com/100)+90;
     
-    float command_rate_pitch = (((float)y_com)/1);//no scaling 30 deg/sec is 30*130=3900 lsb
-    float command_rate_roll = (((float)x_com)/1);//
+    float command_rate_pitch = (((float)y_com)*2);//no scaling 30 deg/sec is 30*130=3900 lsb
+    float command_rate_roll = (((float)x_com)*2);//
     
     //ATTITUDE LOOP
     
