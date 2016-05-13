@@ -12,3 +12,5 @@ extern int16_t z_gyro_raw;
 
 extern float comp_angle_roll;
 extern float comp_angle_pitch;
+
+extern double alt;

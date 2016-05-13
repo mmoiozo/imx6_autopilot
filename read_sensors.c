@@ -7,6 +7,9 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <math.h>
+#include "main_ap_loop.h" 
+#include "AHRS.h"
+#include "serial_com.h"
 
 #define MPU_ADDR 0x69//b1101001 (pin AD0 is logic high)
 #define BMP_ADDR 0x77// 1110111
@@ -63,6 +66,28 @@ uint8_t  DLH = 0x01<<3;
 uint8_t  FCR = 0x02<<3;
 uint8_t  RHR = 0x00<<3;
 
+
+//Data logging
+FILE *fp;
+struct timeval start_time;
+double log_start_time = 0;
+int     log_count = 0;
+int     log_count_array[150];
+float   log_time       [150];
+float   log_elapsed    [150];
+float   log_com_rate   [150];
+int16_t log_gyro_x     [150];
+int16_t log_gyro_y     [150];
+int16_t log_gyro_z     [150];
+int16_t log_acc_x      [150];
+int16_t log_acc_y      [150];
+int16_t log_acc_z      [150];
+float   log_pitch      [150];
+float   log_roll       [150];
+float   log_alt        [150];
+int16_t log_com_x      [150];
+int16_t log_com_y      [150];
+int16_t log_com_t      [150];
 
 
 void initialize_sensors(int *all_connected)
@@ -428,6 +453,73 @@ void mpu_init()
 	}
 
 	buffer[0]=0x1A;//configuration register
-	buffer[1]=0x04;//2=98hz 3=42hz 4=20hz 5=10hz 6=5hz
+	buffer[1]=0x06;//2=98hz 3=42hz 4=20hz 5=10hz 6=5hz
 	write(fd_i2c, buffer, 2);
+}
+
+void log_data(double delta_t, double current_time,float com_rate)
+{
+    if(flight_status == 0 && t_com > -3200)
+    {
+        log_count = 0;
+        
+        log_start_time = current_time;
+        
+        flight_status = 1;
+        
+        fp = fopen("log.txt", "a");
+        fprintf(fp, "START LOGGING----------------------------------------------------------------------------------\n");
+        fclose(fp);
+    }
+    else if(flight_status == 1 && t_com < -3200)
+    {
+        flight_status = 0;
+        fp = fopen("log.txt", "a");
+        fprintf(fp, "STOP LOGGING___________________________________________________________________________________\n");
+        fclose(fp);
+    }
+    
+    if(flight_status == 1 && log_count < 149)
+    {
+    
+        log_count_array[log_count] = log_count;
+        log_time       [log_count] = (float)(current_time - log_start_time);
+        log_elapsed    [log_count] = (float)delta_t;
+        log_com_rate   [log_count] = (float)com_rate;
+        log_gyro_x     [log_count] = x_gyro_raw;
+        log_gyro_y     [log_count] = y_gyro_raw;
+        log_gyro_z     [log_count] = z_gyro_raw;
+        log_acc_x      [log_count] = x_acc_raw;
+        log_acc_y      [log_count] = y_acc_raw;
+        log_acc_z      [log_count] = z_acc_raw;
+        log_pitch      [log_count] = comp_angle_pitch;
+        log_roll       [log_count] = comp_angle_roll;
+        log_alt        [log_count] = alt;
+        log_com_x      [log_count] = x_com;
+        log_com_y      [log_count] = y_com;
+        log_com_t      [log_count] = t_com;
+    
+        log_count +=1;
+
+    }
+    
+}
+
+
+void write_log()
+{
+    if(flight_status == 1)
+    {
+        for(int i = 0;i < log_count;i++)
+        {
+            
+        fp = fopen("log.txt", "a");
+        fprintf(fp,"%d %f %f %f %d %d %d %d %d %d %f %f %f %d %d %d \n",log_count_array[i],log_time[i],log_elapsed[i],log_com_rate[i],log_gyro_x[i],log_gyro_y[i]
+                ,log_gyro_z[i],log_acc_x[i],log_acc_y[i],log_acc_z[i],log_pitch[i],log_roll[i],log_alt[i],log_com_x[i],log_com_y[i]
+                ,log_com_t[i]);
+        fclose(fp);
+            
+        }
+        log_count = 0;
+    }
 }

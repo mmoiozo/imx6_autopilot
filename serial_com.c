@@ -242,9 +242,9 @@ void uart_read_nc(char *received)
                         
                         if(link_status == 1||link_status == 2)    
                         {
-                            /* open the file */
+                            /* open the file /
                             fp = fopen("log.txt", "a");
-                            /* write to the file */
+                            // write to the file /
                             fprintf(fp,"%i bytes read :\n", rx_length);
                             for(int i = 0;i<rx_length;i++)
                             {
@@ -252,8 +252,8 @@ void uart_read_nc(char *received)
                             }
                              fprintf(fp,">end\n");
                            
-                            /* close the file */
                             fclose(fp);
+                            */
                         }
                         
                         

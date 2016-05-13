@@ -53,6 +53,8 @@ int main (int   argc, char **argv[])
  int16_t mag_y;
  int16_t mag_z;
  
+ int flight_status = 0;//0 for motors off 1 for motors on (in future 2 for real flight? > 1m)
+ 
  //uint16_t pwm_counter = 205;//250;
  uint16_t pwm_counter = 819;//250; 200 hz
  int pwm_count = 0;
@@ -99,11 +101,11 @@ int main (int   argc, char **argv[])
         /* open the file */
         fp = fopen("log.txt", "a");
         if (fp == NULL) {
-            printf("I couldn't open results.dat for appending.\n");
+            //printf("I couldn't open results.dat for appending.\n");
         }
     
         /* write to the file */
-        fprintf(fp, "--------------------------------------------------------------\n");
+        fprintf(fp, "STARTING NEW FLIGHT--------------------------------------------------------------\n");
         /* close the file */
         fclose(fp);
         
@@ -138,10 +140,10 @@ int main (int   argc, char **argv[])
  double elapsed_time_20 = 0;
  float loop_rate = 0;
  char recv = 0;
- double alt = 0;
+ //double alt = 0;
  
  //SAFETY WAIT FOR THROTTLE SIGNAL AT LOWEST POSITION
- //wait_signal();
+ wait_signal();
  
  while(loop_status == 1)
    {
@@ -155,7 +157,7 @@ int main (int   argc, char **argv[])
         elapsed_20 = curr_time - last_time_20;
 
         //20 HZ loop
-        if(elapsed_20 > 0.05)//wwas 0.03
+        if(elapsed_20 > 0.05)//was 0.03
 	{
             last_time_20 = (double)(start.tv_sec + start.tv_usec/1000000.0);
             elapsed_time_20 = elapsed_20;
@@ -175,12 +177,12 @@ int main (int   argc, char **argv[])
                 
                 //int16_t x_angle_d = (comp_angle_pitch * 10)-900;
                 //int16_t y_angle_d = (comp_angle_roll * 10)-900;
-                int16_t pitch_control_d = (int16_t)pitch_control;
-                int16_t roll_control_d = (int16_t)roll_control;
+                int16_t pitch_control_d = x_com;//(int16_t)pitch_control;
+                int16_t roll_control_d = y_com;//(int16_t)roll_control;
                 //int16_t altitude = (int16_t)(alt);i_cmd_pitch
                 int16_t altitude = (int16_t)(i_cmd_pitch);//check integral wind-up  
                 //int16_t refresh = loop_rate;
-                int16_t refresh = (int16_t)(i_cmd_roll);
+                int16_t refresh = loop_rate_20;// (int16_t)(i_cmd_roll);
                 //int16_t connected = recv;
                 int16_t connected = loop_rate;
                 
@@ -249,12 +251,16 @@ int main (int   argc, char **argv[])
         
         if(link_status == 1||link_status == 2)    
         {
+            /*
         fp = fopen("log.txt", "a");
-          /* write to the file */
+          // write to the file /
         fprintf(fp,"Elapsed long: %f Loop rate com HZ: %f Loop rate Main: %f current time %f \n", elapsed_time_20,loop_rate_20,loop_rate,curr_time);
-          /* close the file */
+          // close the file /
         fclose(fp);
+        */
         }
+        
+        write_log();//write log data at 2hz
         
 	}
 	
@@ -266,6 +272,8 @@ int main (int   argc, char **argv[])
         link_check(loop_rate_20);//check if we have a good signal
         PID_cascaded(elapsed);//run the cascaded PID loop
         //pwm_set_all(pwm_counter,pwm_counter,pwm_counter,pwm_counter);
+        
+        log_data(elapsed,curr_time,loop_rate_20);//high speed logging
         
         if(gps_count > 12)
         {

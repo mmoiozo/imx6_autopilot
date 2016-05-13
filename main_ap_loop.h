@@ -11,3 +11,4 @@
 
 int g_argc;
 char **g_argv;
+int flight_status;
