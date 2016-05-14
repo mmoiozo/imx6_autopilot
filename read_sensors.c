@@ -10,6 +10,7 @@
 #include "main_ap_loop.h" 
 #include "AHRS.h"
 #include "serial_com.h"
+#include "stabilisation.h"
 
 #define MPU_ADDR 0x69//b1101001 (pin AD0 is logic high)
 #define BMP_ADDR 0x77// 1110111
@@ -88,6 +89,10 @@ float   log_alt        [150];
 int16_t log_com_x      [150];
 int16_t log_com_y      [150];
 int16_t log_com_t      [150];
+float   log_rc_pitch   [150];
+float   log_rc_roll    [150];
+float   log_pitch_control   [150];
+float   log_roll_control   [150];
 
 
 void initialize_sensors(int *all_connected)
@@ -498,6 +503,10 @@ void log_data(double delta_t, double current_time,float com_rate)
         log_com_x      [log_count] = x_com;
         log_com_y      [log_count] = y_com;
         log_com_t      [log_count] = t_com;
+        log_rc_pitch   [log_count] = pitch_control_rate;
+        log_rc_roll    [log_count] = roll_control_rate;
+        log_pitch_control   [log_count] = pitch_control;
+        log_roll_control    [log_count] = roll_control;
     
         log_count +=1;
 
@@ -514,9 +523,9 @@ void write_log()
         {
             
         fp = fopen("log.txt", "a");
-        fprintf(fp,"%d %f %f %f %d %d %d %d %d %d %f %f %f %d %d %d \n",log_count_array[i],log_time[i],log_elapsed[i],log_com_rate[i],log_gyro_x[i],log_gyro_y[i]
+        fprintf(fp,"%d %f %f %f %d %d %d %d %d %d %f %f %f %d %d %d %f %f %f %f \n",log_count_array[i],log_time[i],log_elapsed[i],log_com_rate[i],log_gyro_x[i],log_gyro_y[i]
                 ,log_gyro_z[i],log_acc_x[i],log_acc_y[i],log_acc_z[i],log_pitch[i],log_roll[i],log_alt[i],log_com_x[i],log_com_y[i]
-                ,log_com_t[i]);
+                ,log_com_t[i], log_rc_pitch,log_rc_roll,log_pitch_control,log_roll_control);
         fclose(fp);
             
         }

@@ -22,9 +22,7 @@
  uint8_t gain_P_X_O = 0;
  uint8_t gain_P_Y_O = 0;
 
- float pitch_control = 0;
- float roll_control = 0;
- float z_control = 0;
+ 
  
  float prev_error_pitch = 0;
  float prev_error_roll = 0;
@@ -32,6 +30,13 @@
  float i_cmd_pitch = 0;
  float i_cmd_roll = 0;
  
+ //exern for verification
+ float pitch_control_rate = 0;
+ float roll_control_rate =  0;
+ 
+ float pitch_control = 0;
+ float roll_control = 0;
+ float z_control = 0;
 
 void PID_stabilisation(double delta_t)
 {
@@ -116,8 +121,8 @@ void PID_cascaded(double delta_t)
     if(i_cmd_roll > 40)i_cmd_roll = 40;//prevent integral windup
     if(i_cmd_roll < -40)i_cmd_roll = -40;
     
-    float pitch_control_rate = p_cmd_pitch + i_cmd_pitch;
-    float roll_control_rate =  p_cmd_roll + i_cmd_roll;
+    pitch_control_rate = p_cmd_pitch + i_cmd_pitch;
+    roll_control_rate =  p_cmd_roll + i_cmd_roll;
     
     //RATE LOOP
     
