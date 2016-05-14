@@ -525,7 +525,7 @@ void write_log()
         fp = fopen("log.txt", "a");
         fprintf(fp,"%d %f %f %f %d %d %d %d %d %d %f %f %f %d %d %d %f %f %f %f \n",log_count_array[i],log_time[i],log_elapsed[i],log_com_rate[i],log_gyro_x[i],log_gyro_y[i]
                 ,log_gyro_z[i],log_acc_x[i],log_acc_y[i],log_acc_z[i],log_pitch[i],log_roll[i],log_alt[i],log_com_x[i],log_com_y[i]
-                ,log_com_t[i], log_rc_pitch,log_rc_roll,log_pitch_control,log_roll_control);
+                ,log_com_t[i], log_rc_pitch[i],log_rc_roll[i],log_pitch_control[i],log_roll_control[i]);
         fclose(fp);
             
         }
