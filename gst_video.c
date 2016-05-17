@@ -259,7 +259,7 @@ int *ptr2 = &argv;
     return -1;
   }
 
-  g_object_set (G_OBJECT (sink),"location","clip_1080p_1.mts","sync",FALSE, NULL);
+  g_object_set (G_OBJECT (sink),"location","home/alarm/media/clip_1080p_1.mts","sync",FALSE, NULL);
   g_object_set (G_OBJECT (videosrc),"capture-mode",2, "capture-format", 1,"fps-n",30,"queue-size",10, NULL);
   g_object_set (G_OBJECT (videoenc),"idr-interval", 16 ,"quant-param" ,20 , NULL);
   g_object_set (G_OBJECT (bayer1),"fbnum",2, "fbset", 1,"extbuf",1,"red",1.15,"green", 1.0,"blue",1.25,"chrom",140, NULL);
