@@ -12,6 +12,8 @@
 void initialize_pipeline(int   argc, char **argv[]);
 void initialize_720p(int   argc, char **argv[]);
 void start_1080p_record(int   argc, char **argv[]);
+void start_720p_record(int   argc, char **argv[]);
+void start_720x960_record(int   argc, char **argv[]);
 
 gboolean bus_call (GstBus *bus, GstMessage *msg);
 GstBus *g_bus;

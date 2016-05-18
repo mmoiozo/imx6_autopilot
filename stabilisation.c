@@ -149,10 +149,10 @@ void PID_cascaded(double delta_t)
     int throttle = 819 + (t_com + 3276)/7;
     if(throttle < 819)throttle = 819;
     
-    motor_1 = throttle + pitch_control + roll_control;
-    motor_2 = throttle + pitch_control - roll_control;
-    motor_3 = throttle - pitch_control - roll_control;
-    motor_4 = throttle - pitch_control + roll_control;
+    motor_1 = (uint16_t)(throttle + pitch_control + roll_control);
+    motor_2 = (uint16_t)(throttle + pitch_control - roll_control);
+    motor_3 = (uint16_t)(throttle - pitch_control - roll_control);
+    motor_4 = (uint16_t)(throttle - pitch_control + roll_control);
     
     
     pwm_set_all(motor_1,motor_2,motor_3,motor_4);

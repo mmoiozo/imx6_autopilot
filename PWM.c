@@ -42,8 +42,8 @@ void pca_init(int *pca_success)
         //Prescaler 
         pca_buffer[0] = PCA_PRE_SCALE;
 	//pca_buffer[1] = 0x79;//121;//presacale value 50hz:121 
-	//pca_buffer[1] = 0x0E;//presacale value 400hz:14 
-	pca_buffer[1] = 0x1E;//presacale value 200hz:30
+	pca_buffer[1] = 0x0E;//presacale value 400hz:14 
+	//pca_buffer[1] = 0x1E;//presacale value 200hz:30
 	write(fd_i2c, pca_buffer, 2);
 	usleep(500);
 	read(fd_i2c, pca_buffer, 1);
@@ -91,6 +91,12 @@ int pwm_set_all(uint16_t duration_1, uint16_t duration_2, uint16_t duration_3, u
 		printf("ioctl error: %s\n", strerror(errno));
 		return 1;
 	}
+	
+	duration_1 *=2;		// Multiply with two to compensate for increase of pwm freq from 200 to 400hz
+        duration_2 *=2;
+        duration_3 *=2;
+        duration_4 *=2;
+	
         if(duration_1>4095) duration_1=4095;		// Ensure within bounds
         if(duration_2>4095) duration_2=4095;
         if(duration_3>4095) duration_3=4095;
