@@ -66,8 +66,10 @@ int main (int   argc, char **argv[])
   int state = 0;
   
   //initialize_720p(argc,argv);
-  initialize_pipeline(argc,argv);
+  //initialize_pipeline(argc,argv);
   //start_1080p_record(argc,argv);
+  start_720p_record(argc,argv);
+  //start_720x960_record(argc,argv);
 
 	//UART initialisation
 	//uart_init();
@@ -265,6 +267,7 @@ int main (int   argc, char **argv[])
 	}
 	
 	//START MAIN LOOP CODE
+        
         
         //read_mpu(&x_acceleration, &y_acceleration, &z_acceleration, &mpu_temperature, &x_gyro_rate, &y_gyro_rate, &z_gyro_rate);
         get_angles(elapsed);//get_angles(&comp_angle_x, &comp_angle_y, elapsed);

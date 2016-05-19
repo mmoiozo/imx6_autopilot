@@ -18,6 +18,6 @@ void start_720x960_record(int   argc, char **argv[]);
 gboolean bus_call (GstBus *bus, GstMessage *msg);
 GstBus *g_bus;
 GstMessage *msg;
-GstElement *pipeline, *videosrc, *srcq, *videoenc, *encq, *parse, *rtp, *sink, *bayerq, *bayerq1, *bayerq2, *bayer, *bayer1, *bayer2, *videotransform, *rawq, *mpegmux;
+GstElement *pipeline, *videosrc, *srcq, *videoenc, *encq, *parse, *rtp, *sink, *bayerq, *bayerq1, *bayerq2, *bayer, *bayer1, *bayer2, *videotransform, *rawq, *mpegmux, *flip, *flipq;
 
- GstCaps *caps_bayer, *caps_720, *caps_240, *caps_raw;
+ GstCaps *caps_bayer, *caps_720, *caps_240, *caps_raw, *caps_ipu;
