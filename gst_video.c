@@ -39,7 +39,7 @@ void check_pipeline_status()
         }
 	
 	if(new_state == GST_STATE_NULL)pipeline_status = 0;
-        else if(new_state == GST_STATE_PLAYING)pipe = 1;
+        else if(new_state == GST_STATE_PLAYING)pipeline_status = 1;
 	
 }
 
