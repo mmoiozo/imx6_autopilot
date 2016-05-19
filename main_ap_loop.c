@@ -263,6 +263,7 @@ int main (int   argc, char **argv[])
         }
         
         write_log();//write log data at 2hz
+        check_pipeline_status();//check if pipeline has to be stopped or started
         
 	}
 	
@@ -292,12 +293,14 @@ int main (int   argc, char **argv[])
 	//END MAIN LOOP CODE
 
           // See if we have pending messages on the bus and handle them
+          /*
         while ((msg = gst_bus_pop (g_bus))) 
 	{
           // Call your bus message handler
           bus_call (g_bus, msg);
           gst_message_unref (msg); 
 	}
+	*/
       //usleep(1000);
      
    }

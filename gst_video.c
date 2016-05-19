@@ -11,6 +11,38 @@
 #include "gst_video.h"
 
 
+int pipeline_status = -1;//
+int wait_for_state_change = 0;//
+GstState old_state, new_state;
+
+int rec_com = 0;//record start stop command 0:idle 1: start 2: stop
+
+void check_pipeline_status()
+{
+     // See if we have pending messages on the bus and handle them
+        while ((msg = gst_bus_pop (g_bus))) 
+	{
+          // Call your bus message handler
+          bus_call (g_bus, msg);
+          gst_message_unref (msg); 
+	}
+	
+	if(rec_com == 1 && new_state == GST_STATE_NULL && wait_for_state_change == 0)
+        {
+            gst_element_set_state (pipeline, GST_STATE_PLAYING);
+            wait_for_state_change = 1;// wat for getting to playing state
+        }
+        else if(rec_com == 2 && new_state =! GST_STATE_NULL && wait_for_state_change == 0)
+        {
+            gst_element_set_state (pipeline, GST_STATE_NULL);
+            wait_for_state_change = 2;//wait for getting to null state
+        }
+	
+	if(new_state == GST_STATE_NULL)pipeline_status = 0;
+        else if(new_state == GST_STATE_PLAYING)pipe = 1;
+	
+}
+
 gboolean bus_call (GstBus *bus, GstMessage *msg)//static
 {
   switch (GST_MESSAGE_TYPE (msg)) {
@@ -33,12 +65,23 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
       //loop_status = 0;
       break;
     }
+    case GST_MESSAGE_STATE_CHANGED:
+          /* We are only interested in state-changed messages from the pipeline */
+    
+          gst_message_parse_state_changed (msg, &old_state, &new_state, NULL);
+          g_print ("Element %s changed state from %s to %s.\n",
+          GST_OBJECT_NAME (msg->src),
+          gst_element_state_get_name (old_state),
+          gst_element_state_get_name (new_state));
+          break;
     default:
+         g_printerr ("Unexpected message received.\n");
       break;
   }
  
   return TRUE;
 }
+
 
  static gboolean
  link_elements_with_filter (GstElement*element1, GstElement*element2)
@@ -516,6 +559,7 @@ int *ptr2 = &argv;
   g_print ("Streaming to port: %s\n", argv[1]);
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
+
 
 /*
 void start_1080p_record(int   argc, char **argv[])
