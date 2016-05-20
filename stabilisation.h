@@ -20,7 +20,7 @@ extern float roll_control_rate;
 
 extern float pitch_control;
 extern float roll_control;
-extern float z_control;
+extern float yaw_control;
 
 extern float i_cmd_pitch;
 extern float i_cmd_roll;

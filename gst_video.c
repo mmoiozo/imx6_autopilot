@@ -32,7 +32,7 @@ void check_pipeline_status()
             gst_element_set_state (pipeline, GST_STATE_PLAYING);
             wait_for_state_change = 1;// wat for getting to playing state
         }
-        else if(rec_com == 2 && new_state =! GST_STATE_NULL && wait_for_state_change == 0)
+        else if(rec_com == 2 && new_state != GST_STATE_NULL && wait_for_state_change == 0)
         {
             gst_element_set_state (pipeline, GST_STATE_NULL);
             wait_for_state_change = 2;//wait for getting to null state

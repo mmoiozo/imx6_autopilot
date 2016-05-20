@@ -66,9 +66,9 @@ int main (int   argc, char **argv[])
   int state = 0;
   
   //initialize_720p(argc,argv);
-  //initialize_pipeline(argc,argv);
+  initialize_pipeline(argc,argv);
   //start_1080p_record(argc,argv);
-  start_720p_record(argc,argv);
+  //start_720p_record(argc,argv);
   //start_720x960_record(argc,argv);
 
 	//UART initialisation

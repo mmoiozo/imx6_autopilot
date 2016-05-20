@@ -36,7 +36,7 @@
  
  float pitch_control = 0;
  float roll_control = 0;
- float z_control = 0;
+ float yaw_control = 0;
 
 void PID_stabilisation(double delta_t)
 {
@@ -95,16 +95,17 @@ void PID_stabilisation(double delta_t)
 
 void PID_cascaded(double delta_t)
 {
-    uint16_t motor_1 = 0;//right front
-    uint16_t motor_2 = 0;//left front
-    uint16_t motor_3 = 0;//left back
-    uint16_t motor_4 = 0;//right back
+    uint16_t motor_1 = 0;//right front// anti clockwise 
+    uint16_t motor_2 = 0;//left front // clockwise
+    uint16_t motor_3 = 0;//left back  // anti clockwise
+    uint16_t motor_4 = 0;//right back // clockwise
     
     float command_angle_pitch = (((float)y_com)/100)+90+10;//((float)y_com/100)+90;+(1891/100)
     float command_angle_roll = (((float)x_com)/100)+90;//(-(float)x_com/100)+90;
     
     float command_rate_pitch = (((float)y_com)*2);//no scaling 30 deg/sec is 30*130=3900 lsb
     float command_rate_roll = (((float)x_com)*2);//
+    float command_rate_yaw = (((float)r_com)*3);//70 -50 deg/sec 
     
     //ATTITUDE LOOP
     
@@ -129,13 +130,16 @@ void PID_cascaded(double delta_t)
     //Rate control
     //float rate_error_pitch = (float)(-y_gyro_raw) - command_rate_pitch;
     //float rate_error_roll = (float)x_gyro_raw - command_rate_roll;
+    //float rate_error_yaw = (float)z_gyro_raw - command_rate_yaw;
     
     //Outer loop control
     float rate_error_pitch = (float)(-y_gyro_raw) - (-pitch_control_rate);
-    float rate_error_roll  = (float)x_gyro_raw - (-roll_control_rate);
+    float rate_error_roll  = (float)x_gyro_raw    - (-roll_control_rate);
+    float rate_error_yaw   = (float)z_gyro_raw    - command_rate_yaw;
     
     float p_cmd_pitch_r = rate_error_pitch*((float)gain_P_X/20000);
     float p_cmd_roll_r = rate_error_roll*((float)gain_P_Y/20000);//was gain_P_Y but is now temporary used by outer loop P 
+    float p_cmd_yaw_r = rate_error_yaw*((float)gain_P_Z/20000);
     
     float d_cmd_pitch = ((rate_error_pitch-prev_error_pitch)/delta_t)*((float)gain_D_X/2000000);
     float d_cmd_roll = ((rate_error_roll-prev_error_roll)/delta_t)*((float)gain_D_Y/2000000);
@@ -145,17 +149,18 @@ void PID_cascaded(double delta_t)
     
     pitch_control = p_cmd_pitch_r + d_cmd_pitch;
     roll_control  = p_cmd_roll_r  + d_cmd_roll;
+    yaw_control   = p_cmd_yaw_r;//later also integral term and absolute heading
     
     int throttle = 819 + (t_com + 3276)/7;
-    if(throttle < 819)throttle = 819;
+    if(throttle < 819)throttle = 819;//throttle minimum limit
     
-    motor_1 = (uint16_t)(throttle + pitch_control + roll_control);
-    motor_2 = (uint16_t)(throttle + pitch_control - roll_control);
-    motor_3 = (uint16_t)(throttle - pitch_control - roll_control);
-    motor_4 = (uint16_t)(throttle - pitch_control + roll_control);
+    motor_1 = (uint16_t)(throttle + pitch_control + roll_control + yaw_control);
+    motor_2 = (uint16_t)(throttle + pitch_control - roll_control - yaw_control);
+    motor_3 = (uint16_t)(throttle - pitch_control - roll_control + yaw_control);
+    motor_4 = (uint16_t)(throttle - pitch_control + roll_control - yaw_control);
     
     
-    pwm_set_all(motor_1,motor_2,motor_3,motor_4);
+    pwm_set_all(motor_1,motor_2,motor_3,motor_4);//write new pwm duty cycles to pwm driver registers
     //pwm_set_all(throttle,205,205,205 );
     //pwm_set_all(205,throttle,205,205 );
     //pwm_set_all(205,205,throttle,205 );
