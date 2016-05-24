@@ -94,6 +94,9 @@ float   log_rc_roll    [150];
 float   log_pitch_control   [150];
 float   log_roll_control   [150];
 
+//logging cooldown
+int cooldown_count = 0;
+int start_cooldown = 0;
 
 void initialize_sensors(int *all_connected)
 {
@@ -471,18 +474,37 @@ void log_data(double delta_t, double current_time,float com_rate)
         log_start_time = current_time;
         
         flight_status = 1;
+	
+	time_t t = time(NULL);
+	struct tm *tm = localtime(&t);
         
         fp = fopen("log.txt", "a");
-        fprintf(fp, "START LOGGING----------------------------------------------------------------------------------\n");
+        fprintf(fp, "START LOGGING %s ----------------------------------------------------------------------------------\n",asctime(tm));
         fclose(fp);
     }
     else if(flight_status == 1 && t_com < -3200)
     {
-        flight_status = 0;
-        fp = fopen("log.txt", "a");
-        fprintf(fp, "STOP LOGGING___________________________________________________________________________________\n");
-        fclose(fp);
+	
+	start_cooldown = 1;//start 5 sec cooldown counter
+	
     }
+    
+    if(cooldown_count > 10)//after 5 sec cooldown stop logging
+    {
+       flight_status = 0;
+       cooldown_count = 0;
+       start_cooldown = 0;
+       fp = fopen("log.txt", "a");
+       fprintf(fp, "STOP LOGGING___________________________________________________________________________________\n");
+       fclose(fp); 
+    }
+    
+    if(start_cooldown == 1 && t_com > -3200) //if throttle is increased during cooldown stop counting and reset cooldown counter
+    {
+      cooldown_count = 0;
+      start_cooldown = 0;
+    }
+      
     
     if(flight_status == 1 && log_count < 149)
     {
@@ -531,4 +553,6 @@ void write_log()
         }
         log_count = 0;
     }
+    
+    if(start_cooldown == 1) cooldown_count+=1;
 }

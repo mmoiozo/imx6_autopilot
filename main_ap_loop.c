@@ -106,8 +106,13 @@ int main (int   argc, char **argv[])
             //printf("I couldn't open results.dat for appending.\n");
         }
     
+    
+	//get system time
+	time_t t = time(NULL);
+	struct tm *tm = localtime(&t);
+	//printf("%s\n", asctime(tm));
         /* write to the file */
-        fprintf(fp, "STARTING NEW FLIGHT--------------------------------------------------------------\n");
+        fprintf(fp, "STARTING NEW FLIGHT At: %s--------------------------------------------------------------\n", asctime(tm));
         /* close the file */
         fclose(fp);
         
