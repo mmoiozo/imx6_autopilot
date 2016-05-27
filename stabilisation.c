@@ -100,8 +100,8 @@ void PID_cascaded(double delta_t)
     uint16_t motor_3 = 0;//left back  // anti clockwise
     uint16_t motor_4 = 0;//right back // clockwise
     
-    float command_angle_pitch = (((float)y_com)/100)+90+10;//((float)y_com/100)+90;+(1891/100)
-    float command_angle_roll = (((float)x_com)/100)+90;//(-(float)x_com/100)+90;
+    float command_angle_pitch = (((float)y_com)/100)+90+10;//
+    float command_angle_roll = (((float)x_com)/100)+90;//
     
     float command_rate_pitch = (((float)y_com)*2);//no scaling 30 deg/sec is 30*130=3900 lsb
     float command_rate_roll = (((float)x_com)*2);//
@@ -151,8 +151,18 @@ void PID_cascaded(double delta_t)
     roll_control  = p_cmd_roll_r  + d_cmd_roll;
     yaw_control   = p_cmd_yaw_r;//later also integral term and absolute heading
     
-    int throttle = 819 + (t_com + 3276)/7;
+    if(pitch_control > 45)pitch_control = 45;
+    else if(pitch_control < -45)pitch_control = -45;
+    if(roll_control > 45)roll_control = 45;
+    else if(roll_control < -45)roll_control = -45;
+    if(yaw_control > 45)yaw_control = 45;
+    else if(yaw_control < -45)yaw_control = -45;
+    
+    
+    //int throttle = 819 + (t_com + 3276)/7;
+    int throttle = 819 + (t_com + 3276)/7.6;
     if(throttle < 819)throttle = 819;//throttle minimum limit
+    
     
     motor_1 = (uint16_t)(throttle + pitch_control + roll_control + yaw_control);
     motor_2 = (uint16_t)(throttle + pitch_control - roll_control - yaw_control);
@@ -161,11 +171,11 @@ void PID_cascaded(double delta_t)
     
     
     pwm_set_all(motor_1,motor_2,motor_3,motor_4);//write new pwm duty cycles to pwm driver registers
-    //pwm_set_all(throttle,205,205,205 );
-    //pwm_set_all(205,throttle,205,205 );
-    //pwm_set_all(205,205,throttle,205 );
+    //pwm_set_all(throttle,819,819,819 );
+    //pwm_set_all(819,throttle,819,819 );
     //pwm_set_all(819,819,throttle,819 );
-    //pwm_set_all(205,205,205,throttle );
+    //pwm_set_all(819,819,throttle,819 );
+    //pwm_set_all(819,819,819,throttle );
 }
 
 
