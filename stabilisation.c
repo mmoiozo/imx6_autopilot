@@ -100,8 +100,8 @@ void PID_cascaded(double delta_t)
     uint16_t motor_3 = 0;//left back  // anti clockwise
     uint16_t motor_4 = 0;//right back // clockwise
     
-    float command_angle_pitch = (((float)y_com)/100)+90+10;//
-    float command_angle_roll = (((float)x_com)/100)+90;//
+    float command_angle_pitch = (((float)y_com)/100)+90+6;//was +8
+    float command_angle_roll = (((float)x_com)/100) +90+10 ;//was -10
     
     float command_rate_pitch = (((float)y_com)*2);//no scaling 30 deg/sec is 30*130=3900 lsb
     float command_rate_roll = (((float)x_com)*2);//
