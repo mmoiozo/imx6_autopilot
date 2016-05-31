@@ -16,4 +16,5 @@ extern int16_t x_com;
 extern int16_t y_com;
 extern int16_t t_com;
 extern int16_t r_com;
+extern int16_t rec_com;
 

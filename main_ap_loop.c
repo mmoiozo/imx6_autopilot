@@ -68,7 +68,7 @@ int main (int   argc, char **argv[])
   //initialize_720p(argc,argv);
   initialize_pipeline(argc,argv);
   //start_1080p_record(argc,argv);
-  //start_720p_record(argc,argv);
+  ///start_720p_record(argc,argv);
   //start_720x960_record(argc,argv);
 
 	//UART initialisation
@@ -184,8 +184,8 @@ int main (int   argc, char **argv[])
                 
                 //int16_t x_angle_d = (comp_angle_pitch * 10)-900;
                 //int16_t y_angle_d = (comp_angle_roll * 10)-900;
-                int16_t pitch_control_d = x_com;//(int16_t)pitch_control;
-                int16_t roll_control_d = y_com;//(int16_t)roll_control;
+                int16_t pitch_control_d = rec_com;//(int16_t)pitch_control;
+                int16_t roll_control_d = pipeline_status;//y_com;//(int16_t)roll_control;
                 //int16_t altitude = (int16_t)(alt);i_cmd_pitch
                 int16_t altitude = (int16_t)(i_cmd_pitch);//check integral wind-up  
                 //int16_t refresh = loop_rate;

@@ -9,13 +9,14 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include "gst_video.h"
+#include "serial_com.h"
 
 
 int pipeline_status = -1;//
 int wait_for_state_change = 0;//
+int state_wait_count = 0;
 GstState old_state, new_state;
 
-int rec_com = 0;//record start stop command 0:idle 1: start 2: stop
 
 void check_pipeline_status()
 {
@@ -35,9 +36,19 @@ void check_pipeline_status()
         else if(rec_com == 2 && new_state != GST_STATE_NULL && wait_for_state_change == 0)
         {
             gst_element_set_state (pipeline, GST_STATE_NULL);
-            wait_for_state_change = 2;//wait for getting to null state
+            wait_for_state_change = 1;//wait for getting to null state
         }
 	
+	//wait 4 sec serial_com
+	if(wait_for_state_change != 0 && state_wait_count < 8)
+	{
+	  state_wait_count++;
+	}
+	else if(wait_for_state_change != 0)
+	{
+	  wait_for_state_change = 0;
+	  state_wait_count = 0;
+	} 
 	if(new_state == GST_STATE_NULL)pipeline_status = 0;
         else if(new_state == GST_STATE_PLAYING)pipeline_status = 1;
 	
@@ -73,6 +84,9 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
           GST_OBJECT_NAME (msg->src),
           gst_element_state_get_name (old_state),
           gst_element_state_get_name (new_state));
+	  wait_for_state_change = 0;//state is changed may now order a new state
+	  
+	  
           break;
     default:
          g_printerr ("Unexpected message received.\n");
@@ -451,6 +465,7 @@ int *ptr2 = &argv;
   gst_element_link_many (flipq, videoenc, encq, parse, mpegmux, sink, NULL);
  /* Set the pipeline to "playing" state*/
   g_print ("Streaming to port: %s\n", argv[1]);
+  
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
 

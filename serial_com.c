@@ -19,6 +19,7 @@ int16_t x_com = 0;
 int16_t y_com = 0;
 int16_t t_com = -3276;//0
 int16_t r_com = 0;
+int16_t rec_com = 0;//record start stop command 0:idle 1: start 2: stop
 
    void uart_init()
    {
@@ -262,9 +263,9 @@ void uart_read_nc(char *received)
                                 if(rx_buffer[i]==132 && rx_buffer[i+1]==122 && rx_buffer[i+2]==115 && rx_buffer[i+3]==152)
                                 {
                                     
-                                    int16_t chk_sum = (rx_buffer[i+13] << 8) | rx_buffer[i+12];
+                                    int16_t chk_sum = (rx_buffer[i+14] << 8) | rx_buffer[i+13];
                                     int16_t sum = 0;
-                                    for(int j = 4;j<12;j++)
+                                    for(int j = 4;j<13;j++)
                                     {
                                        sum += rx_buffer[i+j];
                                     }
@@ -272,10 +273,12 @@ void uart_read_nc(char *received)
                                   if(sum == chk_sum)
                                   {
                                     *received = 1;
-                                    x_com = -((rx_buffer[i+5] << 8) | rx_buffer[i+4]);//different sign on roll
+                                    x_com = ((rx_buffer[i+5] << 8) | rx_buffer[i+4]);//different sign on roll was changed here
                                     y_com = (rx_buffer[i+7] << 8) | rx_buffer[i+6];
                                     t_com = (rx_buffer[i+9] << 8) | rx_buffer[i+8];
                                     r_com = (rx_buffer[i+11] << 8) | rx_buffer[i+10];
+				    rec_com = rx_buffer[i+12];
+				    
                                     //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
                                    // fprintf(fp,"ack\n");
                                     break;

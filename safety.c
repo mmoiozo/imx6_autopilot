@@ -9,6 +9,11 @@
 #include "serial_com.h" //initializing uart
 #include "AHRS.h"//Complementary filter AHRS
 
+//Safety defines
+#define SAFETY_THROTTLE -3276//temporary zero
+#define SAFETY_PITCH 0
+#define SAFETY_ROLL 400
+
 double start_time = 0;
 double elapsed = 0;
 int waiting = 0;
@@ -77,6 +82,13 @@ void link_check(float data_rate)
     if(elapsed > 5)//5 sec
     {
         link_status = 2;
+    }
+    
+    if(link_status == 2)
+    {
+      if(t_com > SAFETY_THROTTLE) t_com = SAFETY_THROTTLE;
+      y_com = SAFETY_PITCH;
+      x_com = SAFETY_ROLL;
     }
     
 }
