@@ -7,6 +7,8 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <math.h>
+#include <string.h>
+#include <sys/ioctl.h>
 #include "main_ap_loop.h" 
 #include "AHRS.h"
 #include "serial_com.h"
@@ -98,7 +100,7 @@ float   log_roll_control   [150];
 int cooldown_count = 0;
 int start_cooldown = 0;
 
-void initialize_sensors(int *all_connected)
+int initialize_sensors(int *all_connected)//void
 {
 	//i2c intialisation
 	*all_connected = 0;
@@ -202,7 +204,7 @@ int read_mpu(int16_t *x_acc, int16_t *y_acc, int16_t *z_acc, int16_t *mpu_temp, 
 	*z_rate = (((int16_t)gyro_buffer[12]) << 8) | gyro_buffer[13];
 }
 
-void init_bmp()
+int init_bmp()
 {
     char calib_buffer[22];
     
@@ -317,7 +319,7 @@ int bmp_get(long *temp, long *pressure)
     }
 }
 
-void hmc_init()
+int hmc_init()
 {
     if (ioctl(fd_i2c, I2C_SLAVE, HMC_ADDR) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
@@ -351,7 +353,7 @@ int hmc_read(int16_t *x_mag, int16_t *y_mag, int16_t *z_mag)
     
 }
 
-void init_sc16()
+int init_sc16()
 {
     char sc16_buffer[65];
     
@@ -453,7 +455,7 @@ int sc16_read()
 	
 }
 
-void mpu_init()
+int mpu_init()
 {
     if (ioctl(fd_i2c, I2C_SLAVE, MPU_ADDR) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
@@ -465,7 +467,7 @@ void mpu_init()
 	write(fd_i2c, buffer, 2);
 }
 
-void log_data(double delta_t, double current_time,float com_rate)
+int log_data(double delta_t, double current_time,float com_rate)
 {
     if(flight_status == 0 && t_com > -3200)
     {

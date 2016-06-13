@@ -173,7 +173,7 @@ void uart_read_simple()
 		int rx_length = 1;
                 while(rx_length > 0)
                 {
-                    rx_length = read(uart0_filestream, (void*)rx_buffer, 500);//255		//Filestream, buffer to store in, number of bytes to 			read (max)
+                    rx_length = read(uart0_filestream, (void*)rx_buffer, 499);//255		//Filestream, buffer to store in, number of bytes to 			read (max)
                     if (rx_length < 0)
                     {
                             //An error occured (will occur if there are no bytes)

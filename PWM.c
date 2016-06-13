@@ -4,6 +4,8 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <linux/i2c-dev.h> //i2
+#include <string.h>
+#include <sys/ioctl.h>
 #include "read_sensors.h" //initializing and reading i2c sensors
 
 #define PCA_ADDR 0x40
@@ -14,7 +16,7 @@
 
 char pca_buffer[20];
 
-void pca_init(int *pca_success)
+int pca_init(int *pca_success)
 {
     if (ioctl(fd_i2c, I2C_SLAVE, PCA_ADDR) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));

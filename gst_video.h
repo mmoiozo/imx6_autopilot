@@ -9,8 +9,8 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-void initialize_pipeline(int   argc, char **argv[]);
-void initialize_720p(int   argc, char **argv[]);
+extern int initialize_pipeline(int   *argc, char ***argv);
+extern int initialize_720p(int   *argc, char ***argv);
 void start_1080p_record(int   argc, char **argv[]);
 void start_720p_record(int   argc, char **argv[]);
 void start_720x960_record(int   argc, char **argv[]);
@@ -24,3 +24,4 @@ GstElement *pipeline, *videosrc, *srcq, *videoenc, *encq, *parse, *rtp, *sink, *
  GstCaps *caps_bayer, *caps_720, *caps_240, *caps_raw, *caps_ipu;
  
 extern int pipeline_status;
+extern int wait_for_state_change;

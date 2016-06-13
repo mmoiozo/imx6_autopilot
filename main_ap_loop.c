@@ -28,7 +28,7 @@ void uart_init();
 void uart_read();
 void uart_write();
 
-int main (int   argc, char **argv[])
+int main (int   argc, char **argv)//[]
 
 {
 
@@ -65,10 +65,10 @@ int main (int   argc, char **argv[])
  
   int state = 0;
   
-  //initialize_720p(argc,argv);
-  initialize_pipeline(argc,argv);
+  //initialize_720p(&argc,&argv);
+  initialize_pipeline(&argc,&argv);
   //start_1080p_record(argc,argv);
-  ///start_720p_record(argc,argv);
+ //start_720p_record(argc,argv);
   //start_720x960_record(argc,argv);
 
 	//UART initialisation
@@ -121,18 +121,21 @@ int main (int   argc, char **argv[])
         usleep(1000000);//three second wait
         send_string("AT+RST\r\n");
         usleep(1000000);
-        uart_read_nc();
+        uart_read_simple();
         send_string("AT+CWMODE?\r\n");
         usleep(10000);
-        uart_read_nc();
+        uart_read_simple();
         send_string("AT+CIFSR\r\n");
         usleep(10000);
-        uart_read_nc();
+        uart_read_simple();
         send_string("AT+CIPMUX=1\r\n");//multiple connection mode in order to enable server mode
         usleep(10000);
-        uart_read_nc();
+        uart_read_simple();
         send_string("AT+CIPSERVER=1,80\r\n");
         usleep(100000);
+	send_string("AT+RFPOWER=82\r\n");
+	usleep(100000);
+	uart_read_simple();
 
         //init sensors
        init_bmp();
@@ -187,7 +190,7 @@ int main (int   argc, char **argv[])
                 int16_t pitch_control_d = rec_com;//(int16_t)pitch_control;
                 int16_t roll_control_d = pipeline_status;//y_com;//(int16_t)roll_control;
                 //int16_t altitude = (int16_t)(alt);i_cmd_pitch
-                int16_t altitude = (int16_t)(i_cmd_pitch);//check integral wind-up  
+                int16_t altitude = wait_for_state_change;// (int16_t)(i_cmd_pitch);//check integral wind-up  
                 //int16_t refresh = loop_rate;
                 int16_t refresh = loop_rate_20;// (int16_t)(i_cmd_roll);
                 //int16_t connected = recv;
@@ -252,8 +255,8 @@ int main (int   argc, char **argv[])
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
         printf("Elapsed long: %f Loop rate HZ: %f current time %f link_status: %d \n", elapsed_time_20,loop_rate_20 , curr_time,link_status);
         //printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
-        printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
-        printf("Pitch control: %f Roll control: %f Throttle command: %d Pitch command: %d\n",pitch_control,roll_control,t_com,y_com);
+        printf("x joy: %d y joy: %d t joy: %d r joy: %d rec_com %d\n",x_com,y_com,t_com,r_com,rec_com);
+       //printf("Pitch control: %f Roll control: %f Throttle command: %d Pitch command: %d\n",pitch_control,roll_control,t_com,y_com);
         //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
         
         if(link_status == 1||link_status == 2)    

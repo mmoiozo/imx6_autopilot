@@ -28,13 +28,14 @@ void check_pipeline_status()
           gst_message_unref (msg); 
 	}
 	
-	if(rec_com == 1 && new_state == GST_STATE_NULL && wait_for_state_change == 0)
+	if(rec_com == 1 && new_state != GST_STATE_PLAYING && wait_for_state_change == 0)
         {
             gst_element_set_state (pipeline, GST_STATE_PLAYING);
             wait_for_state_change = 1;// wat for getting to playing state
         }
         else if(rec_com == 2 && new_state != GST_STATE_NULL && wait_for_state_change == 0)
         {
+	  //printf("state change attempt : %s\n", new_state);
             gst_element_set_state (pipeline, GST_STATE_NULL);
             wait_for_state_change = 1;//wait for getting to null state
         }
@@ -116,7 +117,7 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
  return link_ok;
 }
 
-void initialize_pipeline(int   argc, char **argv[])
+int initialize_pipeline(int   *argc, char ***argv)
 {
 
  const gchar* nano_str;
@@ -124,8 +125,9 @@ void initialize_pipeline(int   argc, char **argv[])
  guint major, minor, micro, nano;
  
  
-int *ptr2 = &argv;
- gst_init (&argc, &ptr2);
+//int *ptr2 = &argv;
+ //gst_init (&argc, &ptr2);
+ gst_init (argc,argv);
 
  gst_version (&major, &minor, &micro, &nano);
 
@@ -153,7 +155,7 @@ int *ptr2 = &argv;
     return -1;
   }
 
-  g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.7", NULL);
+  g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.2", NULL);
   g_object_set (G_OBJECT (videosrc),"pattern", 1, "horizontal-speed", 1, NULL);
   g_object_set (G_OBJECT (videoenc),"idr-interval", 16 ,"quant-param" ,20 , NULL);
 
@@ -175,7 +177,7 @@ int *ptr2 = &argv;
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
 
-void initialize_720p(int   argc, char **argv[])
+int initialize_720p(int   *argc, char ***argv)
 {
 
  const gchar* nano_str;
@@ -183,8 +185,8 @@ void initialize_720p(int   argc, char **argv[])
  guint major, minor, micro, nano;
  
  
-int *ptr2 = &argv;
- gst_init (&argc, &ptr2);
+//int *ptr2 = &argv;
+ gst_init (argc, argv);
 
  gst_version (&major, &minor, &micro, &nano);
 
@@ -218,7 +220,7 @@ int *ptr2 = &argv;
     return -1;
   }
 
-  g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.7", NULL);
+  g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.2", NULL);
   g_object_set (G_OBJECT (videosrc),"capture-mode",5, "capture-format", 1,"fps-n",30, NULL);
   g_object_set (G_OBJECT (videoenc),"idr-interval", 16 ,"quant-param" ,20 , NULL);
   g_object_set (G_OBJECT (bayer),"fbnum",2, "fbset", 1,"extbuf",1,"red",1.15,"green", 1.0,"blue",1.25,"chrom",140, NULL);
@@ -466,7 +468,7 @@ int *ptr2 = &argv;
  /* Set the pipeline to "playing" state*/
   g_print ("Streaming to port: %s\n", argv[1]);
   
-  gst_element_set_state (pipeline, GST_STATE_PLAYING);
+  //gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
 
 void start_720x960_record(int   argc, char **argv[])
