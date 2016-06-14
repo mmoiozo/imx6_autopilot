@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-extern int initialize_pipeline(int   *argc, char ***argv);
+extern gboolean initialize_pipeline(int *argc, char ***argv);
 extern int initialize_720p(int   *argc, char ***argv);
 void start_1080p_record(int   argc, char **argv[]);
 void start_720p_record(int   argc, char **argv[]);

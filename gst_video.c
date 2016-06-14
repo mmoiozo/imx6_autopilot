@@ -17,6 +17,8 @@ int wait_for_state_change = 0;//
 int state_wait_count = 0;
 GstState old_state, new_state;
 
+FILE *fp;
+
 
 void check_pipeline_status()
 {
@@ -61,6 +63,10 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
  
     case GST_MESSAGE_EOS:
       g_print ("End of stream\n");
+      
+      fp = fopen("log.txt", "a");
+      fprintf(fp,"GST End of stream\n");
+      fclose(fp);
       //loop_status = 0;
       break;
  
@@ -72,6 +78,9 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
       g_free (debug);
  
       g_printerr ("Error: %s\n", error->message);
+      fp = fopen("log.txt", "a");
+      fprintf(fp,"GST Error: %s\n", error->message);
+      fclose(fp);
       g_error_free (error);
  
       //loop_status = 0;
@@ -85,12 +94,23 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
           GST_OBJECT_NAME (msg->src),
           gst_element_state_get_name (old_state),
           gst_element_state_get_name (new_state));
+	  
+	  fp = fopen("log.txt", "a");
+          fprintf(fp,"GST Element %s changed state from %s to %s.\n",
+          GST_OBJECT_NAME (msg->src),
+          gst_element_state_get_name (old_state),
+          gst_element_state_get_name (new_state));
+	  fclose(fp);
+	  
 	  wait_for_state_change = 0;//state is changed may now order a new state
 	  
 	  
           break;
     default:
          g_printerr ("Unexpected message received.\n");
+	 fp = fopen("log.txt", "a");
+	 fprintf(fp,"Unexpected message received error.\n");
+	 fclose(fp);
       break;
   }
  
@@ -117,7 +137,7 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
  return link_ok;
 }
 
-int initialize_pipeline(int   *argc, char ***argv)
+gboolean initialize_pipeline(int *argc, char ***argv)
 {
 
  const gchar* nano_str;
@@ -152,10 +172,10 @@ int initialize_pipeline(int   *argc, char ***argv)
   if (!pipeline || !videosrc || !srcq || !videoenc
     || !encq || !parse || !rtp || !sink) {
     g_printerr ("One element could not be created. Exiting.\n");
-    return -1;
+    return FALSE;
   }
 
-  g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.2", NULL);
+  g_object_set (G_OBJECT (sink), "port", 5000,"host", "192.168.2.5", NULL);
   g_object_set (G_OBJECT (videosrc),"pattern", 1, "horizontal-speed", 1, NULL);
   g_object_set (G_OBJECT (videoenc),"idr-interval", 16 ,"quant-param" ,20 , NULL);
 
@@ -169,15 +189,16 @@ int initialize_pipeline(int   *argc, char ***argv)
   if(!link_elements_with_filter(videosrc, srcq))
 	{
         g_printerr ("Videosrc and srcq could not be linked.\n");
-        return -1;
+        return FALSE;
 	}
   gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
  /* Set the pipeline to "playing" state*/
-  g_print ("Streaming to port: %s\n", argv[1]);
+  g_print ("Streaming to port: %s\n", argv);//argv[1]
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
+  return TRUE;
 }
 
-int initialize_720p(int   *argc, char ***argv)
+int initialize_720p(int *argc, char ***argv)
 {
 
  const gchar* nano_str;

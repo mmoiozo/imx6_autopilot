@@ -222,6 +222,9 @@ void uart_read_nc(char *received)
                     {
                             //An error occured (will occur if there are no bytes)
                             //printf("read error %d %s\n", errno, strerror(errno));
+		      fp = fopen("log.txt", "a");
+		      fprintf(fp,"Serial read error %d %s\n", errno, strerror(errno));
+		      fclose(fp);
                     }
                     else if (length == 0)
                     {

@@ -16,6 +16,8 @@
 
 char pca_buffer[20];
 
+FILE *fp;
+
 int pca_init(int *pca_success)
 {
     if (ioctl(fd_i2c, I2C_SLAVE, PCA_ADDR) < 0) {
@@ -91,6 +93,11 @@ int pwm_set_all(uint16_t duration_1, uint16_t duration_2, uint16_t duration_3, u
 {
      if (ioctl(fd_i2c, I2C_SLAVE, PCA_ADDR) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
+		
+		fp = fopen("log.txt", "a");
+		fprintf(fp,"PWM ioctl error: %s\n", strerror(errno));
+		fclose(fp);
+		
 		return 1;
 	}
 	

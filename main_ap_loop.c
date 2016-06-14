@@ -28,7 +28,7 @@ void uart_init();
 void uart_read();
 void uart_write();
 
-int main (int   argc, char **argv)//[]
+int main (int argc, char **argv)//[]
 
 {
 
@@ -66,7 +66,7 @@ int main (int   argc, char **argv)//[]
   int state = 0;
   
   //initialize_720p(&argc,&argv);
-  initialize_pipeline(&argc,&argv);
+  //initialize_pipeline(&argc,&argv);
   //start_1080p_record(argc,argv);
  //start_720p_record(argc,argv);
   //start_720x960_record(argc,argv);
@@ -112,7 +112,7 @@ int main (int   argc, char **argv)//[]
 	struct tm *tm = localtime(&t);
 	//printf("%s\n", asctime(tm));
         /* write to the file */
-        fprintf(fp, "STARTING NEW FLIGHT At: %s--------------------------------------------------------------\n", asctime(tm));
+        fprintf(fp, "STARTING NEW FLIGHT At: %s\n", asctime(tm));
         /* close the file */
         fclose(fp);
         
@@ -151,6 +151,14 @@ int main (int   argc, char **argv)//[]
  float loop_rate = 0;
  char recv = 0;
  //double alt = 0;
+ 
+ //START GSTREAMER PIPELINE//
+ //initialize_720p(&argc,&argv);
+ initialize_pipeline(&argc,&argv);
+  //start_1080p_record(argc,argv);
+ //start_720p_record(argc,argv);
+  //start_720x960_record(argc,argv);
+ 
  
  //SAFETY WAIT FOR THROTTLE SIGNAL AT LOWEST POSITION
  wait_signal();
