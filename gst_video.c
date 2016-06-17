@@ -22,6 +22,8 @@ FILE *fp;
 
 void check_pipeline_status()
 {
+        GstStateChangeReturn state_ret;
+  
      // See if we have pending messages on the bus and handle them
         while ((msg = gst_bus_pop (g_bus))) 
 	{
@@ -38,8 +40,14 @@ void check_pipeline_status()
         else if(rec_com == 2 && new_state != GST_STATE_NULL && wait_for_state_change == 0)
         {
 	  //printf("state change attempt : %s\n", new_state);
-            gst_element_set_state (pipeline, GST_STATE_NULL);
-            wait_for_state_change = 1;//wait for getting to null state
+            state_ret = gst_element_set_state (pipeline, GST_STATE_NULL);
+	    wait_for_state_change = 1;//wait for getting to null state
+	    if(state_ret == GST_STATE_CHANGE_SUCCESS)
+	    {
+	      new_state = GST_STATE_NULL;
+	      pipeline_status = 0;
+	      wait_for_state_change = 0;//
+	    }
         }
 	
 	//wait 4 sec serial_com
@@ -109,7 +117,7 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
     default:
          g_printerr ("Unexpected message received.\n");
 	 fp = fopen("log.txt", "a");
-	 fprintf(fp,"Unexpected message received error.\n");
+	 fprintf(fp,"Uknown GST message: %s\n",GST_MESSAGE_TYPE_NAME(msg));
 	 fclose(fp);
       break;
   }
@@ -391,7 +399,7 @@ int *ptr2 = &argv;
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
 
-void start_720p_record(int   argc, char **argv[])
+gboolean start_720p_record(int *argc, char ***argv)
 {
 
  const gchar* nano_str;
@@ -399,8 +407,8 @@ void start_720p_record(int   argc, char **argv[])
  guint major, minor, micro, nano;
  
  
-int *ptr2 = &argv;
- gst_init (&argc, &ptr2);
+//int *ptr2 = &argv;
+ gst_init (argc, argv);
 
  gst_version (&major, &minor, &micro, &nano);
 
@@ -435,7 +443,7 @@ int *ptr2 = &argv;
   if (!pipeline || !videosrc || !srcq || !bayer1 || !bayer2 || !bayerq1 || !bayerq2 || !flip || !flipq || !videoenc
     || !encq || !parse || !mpegmux || !sink) {
     g_printerr ("One element could not be created. Exiting.\n");
-    return -1;
+    return FALSE;
   }
 
   g_object_set (G_OBJECT (sink),"location","home/alarm/media/clip_720p_1.mts","sync",FALSE, NULL);
@@ -461,7 +469,7 @@ int *ptr2 = &argv;
  {
   gst_object_unref (pipeline);
   g_critical ("Unable to link csp to tee. check your caps.");
-  return 0;
+  return FALSE;
  } 
  
  gst_element_link_many (srcq,bayer1,bayerq1, bayer2, NULL);
@@ -470,7 +478,7 @@ int *ptr2 = &argv;
  {
   gst_object_unref (pipeline);
   g_critical ("Unable to link csp to tee. check your caps.");
-  return 0;
+  return FALSE;
  } 
  
  gst_element_link_many (bayerq2,flip, NULL);
@@ -479,7 +487,7 @@ int *ptr2 = &argv;
  {
   gst_object_unref (pipeline);
   g_critical ("Unable to link csp to tee. check your caps.");
-  return 0;
+  return FALSE;
  } 
  
   
@@ -487,9 +495,10 @@ int *ptr2 = &argv;
   //gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
   gst_element_link_many (flipq, videoenc, encq, parse, mpegmux, sink, NULL);
  /* Set the pipeline to "playing" state*/
-  g_print ("Streaming to port: %s\n", argv[1]);
+  g_print ("Streaming to port: %s\n", argv);
   
   //gst_element_set_state (pipeline, GST_STATE_PLAYING);
+  return TRUE;
 }
 
 void start_720x960_record(int   argc, char **argv[])

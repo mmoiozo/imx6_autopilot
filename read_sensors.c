@@ -530,7 +530,6 @@ int log_data(double delta_t, double current_time,float com_rate)
     
     if(flight_status == 1 && log_count < 149)
     {
-    
         log_count_array[log_count] = log_count;
         log_time       [log_count] = (float)(current_time - log_start_time);
         log_elapsed    [log_count] = (float)delta_t;

@@ -152,16 +152,17 @@ int main (int argc, char **argv)//[]
  char recv = 0;
  //double alt = 0;
  
- //START GSTREAMER PIPELINE//
- //initialize_720p(&argc,&argv);
- initialize_pipeline(&argc,&argv);
-  //start_1080p_record(argc,argv);
- //start_720p_record(argc,argv);
-  //start_720x960_record(argc,argv);
- 
  
  //SAFETY WAIT FOR THROTTLE SIGNAL AT LOWEST POSITION
  wait_signal();
+ 
+ //START GSTREAMER PIPELINE//
+ //initialize_720p(&argc,&argv);
+ ///initialize_pipeline(&argc,&argv);
+  //start_1080p_record(argc,argv);
+ start_720p_record(&argc,&argv);
+  //start_720x960_record(argc,argv);
+ 
  
  while(loop_status == 1)
    {
