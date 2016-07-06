@@ -14,3 +14,6 @@ extern float comp_angle_roll;
 extern float comp_angle_pitch;
 
 extern double alt;
+extern int temp_deg;
+extern int press_pa;
+extern void get_alt();

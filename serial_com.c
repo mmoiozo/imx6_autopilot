@@ -177,13 +177,13 @@ void uart_read_simple()
                     if (rx_length < 0)
                     {
                             //An error occured (will occur if there are no bytes)
-                            //printf("read error %d %s\n", errno, strerror(errno));
+                            printf("read error %d %s\n", errno, strerror(errno));
                     }
                     else if (rx_length == 0)
                     {
                             //No data waiting
                         //int w = write(uart0_filestream,"h",1);
-                        //printf("GPS Poked: %d\n",w);
+                        printf("No data\n");
                         
                     }
                     else
@@ -221,7 +221,7 @@ void uart_read_nc(char *received)
                     if (length < 0)
                     {
                             //An error occured (will occur if there are no bytes)
-                            //printf("read error %d %s\n", errno, strerror(errno));
+                            printf("read error %d %s\n", errno, strerror(errno));
 		      fp = fopen("log.txt", "a");
 		      fprintf(fp,"Serial read error %d %s\n", errno, strerror(errno));
 		      fclose(fp);

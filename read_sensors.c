@@ -51,6 +51,9 @@ long p;   //pressure
 short oss = 3;//oversampling setting 3,max 40hz 0.25m rms noise
 double po = 10132.5;//icao standard atmosphere
 char bmp_count = 0;
+double bmp_start_time = 0;
+double bmp_elapsed = 0;
+
 
 //SC16IS750
 // See section 8.4 of the datasheet for definitions
@@ -72,7 +75,7 @@ uint8_t  RHR = 0x00<<3;
 
 //Data logging
 FILE *fp;
-struct timeval start_time;
+struct timeval start_time,start,stop;
 double log_start_time = 0;
 int     log_count = 0;
 int     log_count_array[150];
@@ -236,12 +239,17 @@ int init_bmp()
         
         printf("BMP180 eeprom calibration: ac1:  %d ac2: %d ac3: %d ac4: %d ac5: %d ac6: %d b1: %d b2: %d mb: %d mc: %d md: %d\n",ac1,ac2,ac3,ac4,ac5,ac6,b1,b2,mb,mc,md);
         
+	gettimeofday(&start, 0);
+	bmp_start_time = (double)(start.tv_sec + start.tv_usec/1000000.0);
     
 }
 
 int bmp_get(long *temp, long *pressure)
 {
-    
+    gettimeofday(&stop, 0);
+    bmp_elapsed = (double)(stop.tv_sec + stop.tv_usec/1000000.0) - bmp_start_time;
+  
+  
     char bmp_buffer[10];
     if (ioctl(fd_i2c, I2C_SLAVE, BMP_ADDR) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
@@ -253,13 +261,24 @@ int bmp_get(long *temp, long *pressure)
 		return 1;
 	}
     
-    if(bmp_count == 0)
+    if(bmp_count == 0 && bmp_elapsed > 0.0245)//for 20 hz
     {
      //request uncompensated temp reading
      bmp_buffer[0] = 0xF4;
      bmp_buffer[1] = 0x2E;
      write(fd_i2c, bmp_buffer, 2);
-     usleep(4500);//wait for temperature reading
+     
+     *pressure = -1;
+     *temp     = -1;
+     
+     bmp_count +=1;
+     gettimeofday(&start, 0);
+     bmp_start_time = (double)(start.tv_sec + start.tv_usec/1000000.0);
+    }
+    else if(bmp_count == 1 && bmp_elapsed > 0.0045)
+    {
+    
+     //usleep(4500);//wait for temperature reading
      
      //read uncompensated temperature
      bmp_buffer[0] = 0xF6;
@@ -273,9 +292,14 @@ int bmp_get(long *temp, long *pressure)
      bmp_buffer[1] = 0x34 + (oss << 6);;
      write(fd_i2c, bmp_buffer, 2);
      
-        bmp_count = 1;
+     *pressure = -1;
+     *temp     = -1;
+     
+     bmp_count += 1;
+     gettimeofday(&start, 0);
+     bmp_start_time = (double)(start.tv_sec + start.tv_usec/1000000.0);
     }
-    else
+    else if(bmp_count == 2 && bmp_elapsed > 0.0255)
     {
      //request uncompensated temp reading
      bmp_buffer[0] = 0xF6;
@@ -325,7 +349,9 @@ int bmp_get(long *temp, long *pressure)
 
     *pressure = *pressure + ((x1 + x2 + 3791) >> 4);
         
-        bmp_count = 0;
+     bmp_count = 0;
+     gettimeofday(&start, 0);
+     bmp_start_time = (double)(start.tv_sec + start.tv_usec/1000000.0);
     }
 }
 
@@ -503,6 +529,7 @@ int log_data(double delta_t, double current_time,float com_rate)
         fp = fopen("log.txt", "a");
         fprintf(fp, "START LOGGING %s\n",asctime(tm));
         fclose(fp);
+	printf("START LOGGING %s\n",asctime(tm));
     }
     else if(flight_status == 1 && t_com < -3200)
     {
@@ -519,6 +546,7 @@ int log_data(double delta_t, double current_time,float com_rate)
        fp = fopen("log.txt", "a");
        fprintf(fp, "STOP LOGGING___________________________________________________________________________________\n");
        fclose(fp); 
+       printf("STOP LOGGING\n");
     }
     
     if(start_cooldown == 1 && t_com > -3200) //if throttle is increased during cooldown stop counting and reset cooldown counter

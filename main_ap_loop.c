@@ -65,11 +65,6 @@ int main (int argc, char **argv)//[]
  
   int state = 0;
   
-  //initialize_720p(&argc,&argv);
-  //initialize_pipeline(&argc,&argv);
-  //start_1080p_record(argc,argv);
- //start_720p_record(argc,argv);
-  //start_720x960_record(argc,argv);
 
 	//UART initialisation
 	//uart_init();
@@ -94,7 +89,7 @@ int main (int argc, char **argv)//[]
         printf("PWM set 205\n");
         
         //init spi_uart
-        init_spi(&x);
+        //init_spi(&x);
         
         //file print test
        
@@ -124,17 +119,17 @@ int main (int argc, char **argv)//[]
         uart_read_simple();
         send_string("AT+CWMODE?\r\n");
         usleep(10000);
-        uart_read_simple();
+        //uart_read_simple();
         send_string("AT+CIFSR\r\n");
         usleep(10000);
-        uart_read_simple();
+        //uart_read_simple();
         send_string("AT+CIPMUX=1\r\n");//multiple connection mode in order to enable server mode
         usleep(10000);
-        uart_read_simple();
+        //uart_read_simple();
         send_string("AT+CIPSERVER=1,80\r\n");
         usleep(100000);
 	send_string("AT+RFPOWER=82\r\n");
-	usleep(100000);
+	usleep(1000000);
 	uart_read_simple();
 
         //init sensors
@@ -156,12 +151,13 @@ int main (int argc, char **argv)//[]
  //SAFETY WAIT FOR THROTTLE SIGNAL AT LOWEST POSITION
  wait_signal();
  
- //START GSTREAMER PIPELINE//
- //initialize_720p(&argc,&argv);
- ///initialize_pipeline(&argc,&argv);
-  //start_1080p_record(argc,argv);
- start_720p_record(&argc,&argv);
-  //start_720x960_record(argc,argv);
+   //START GSTREAMER PIPELINE//
+   //initialize_720p(&argc,&argv);
+   ///initialize_pipeline(&argc,&argv);
+   //start_1080p_record(argc,argv);
+   //start_720p_record(&argc,&argv);
+//start_720p_mpeg4(&argc,&argv);
+   //start_720x960_record(argc,argv);
  
  
  while(loop_status == 1)
@@ -199,7 +195,7 @@ int main (int argc, char **argv)//[]
                 int16_t pitch_control_d = rec_com;//(int16_t)pitch_control;
                 int16_t roll_control_d = pipeline_status;//y_com;//(int16_t)roll_control;
                 //int16_t altitude = (int16_t)(alt);i_cmd_pitch
-                int16_t altitude = wait_for_state_change;// (int16_t)(i_cmd_pitch);//check integral wind-up  
+                int16_t altitude = alt;// (int16_t)(i_cmd_pitch);//check integral wind-up  
                 //int16_t refresh = loop_rate;
                 int16_t refresh = loop_rate_20;// (int16_t)(i_cmd_roll);
                 //int16_t connected = recv;
@@ -227,30 +223,8 @@ int main (int argc, char **argv)//[]
         
 	last_time = (double)(start.tv_sec + start.tv_usec/1000000.0);
 
-        //check closing i2c dev
-        //close(fd_i2c);
-	//UART Send
-        
-        //send_string("+IPD\r\n");
-        //usleep(1000);
-        ////esp8266_send(4);
-	////uart_send();	
-	//UART Read
-	//uart_read_nc();
-        ////fd_i2c = open("/dev/i2c-2", O_RDWR);
-        long temp = 0;
-        long press = 0;
-        double po = 102200;//de bilt //101325;//icao
-        bmp_get(&temp,&press);
-        alt = 44330*( 1-pow(((double)press/po),0.19029));   
+	//get_alt();
         hmc_read(&mag_x,&mag_y,&mag_z);
-        
-        int16_t x_angle_16 =(comp_angle_roll * 10)-900;
-        unsigned char first = x_angle_16 & 0xFF;
-        unsigned char second = x_angle_16 >> 8;
-        uint16_t reconstructed = (second << 8) | first;//(second << 8) | first;
-        int16_t original =(int16_t)(reconstructed);// (int16_t)((second << 8) | first);
-        //printf("x_angle_16: %d first: %d second: %d original: %d reconstructed: %d\n",x_angle_16,first,second,original,reconstructed);
         
         /*
         //print sensor values:
@@ -260,11 +234,11 @@ int main (int argc, char **argv)//[]
         printf("Elapsed long: %f Loop rate HZ: %f current time %f \n", elapsed_long,loop_rate , curr_time);
         printf("x mag: %d y mag: %d z mag: %d \n",mag_x,mag_y,mag_z);
         */
-        //printf("u_temp: %d u_press: %d Altitude: %f \n",temp,press,alt);
+      //printf("temp_deg: %d press_pa: %d Altitude: %f \n",temp_deg,press_pa,alt);
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
-        printf("Elapsed long: %f Loop rate HZ: %f current time %f link_status: %d \n", elapsed_time_20,loop_rate_20 , curr_time,link_status);
+      //printf("Elapsed long: %f Loop rate HZ: %f current time %f link_status: %d \n", elapsed_long,loop_rate, curr_time,link_status);
         //printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
-        printf("x joy: %d y joy: %d t joy: %d r joy: %d rec_com %d\n",x_com,y_com,t_com,r_com,rec_com);
+        //printf("x joy: %d y joy: %d t joy: %d r joy: %d rec_com %d\n",x_com,y_com,t_com,r_com,rec_com);
        //printf("Pitch control: %f Roll control: %f Throttle command: %d Pitch command: %d\n",pitch_control,roll_control,t_com,y_com);
         //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
         
@@ -280,19 +254,16 @@ int main (int argc, char **argv)//[]
         }
         
         write_log();//write log data at 2hz
-        check_pipeline_status();//check if pipeline has to be stopped or started
+       //check_pipeline_status();//check if pipeline has to be stopped or started
         
 	}
 	
 	//START MAIN LOOP CODE
         
-        
-        //read_mpu(&x_acceleration, &y_acceleration, &z_acceleration, &mpu_temperature, &x_gyro_rate, &y_gyro_rate, &z_gyro_rate);
+        get_alt();
         get_angles(elapsed);//get_angles(&comp_angle_x, &comp_angle_y, elapsed);
-        //PID_stabilisation(elapsed);
         link_check(loop_rate_20);//check if we have a good signal
         PID_cascaded(elapsed);//run the cascaded PID loop
-        //pwm_set_all(pwm_counter,pwm_counter,pwm_counter,pwm_counter);
         
         log_data(elapsed,curr_time,loop_rate_20);//high speed logging
         
@@ -309,16 +280,6 @@ int main (int argc, char **argv)//[]
         
 	//END MAIN LOOP CODE
 
-          // See if we have pending messages on the bus and handle them
-          /*
-        while ((msg = gst_bus_pop (g_bus))) 
-	{
-          // Call your bus message handler
-          bus_call (g_bus, msg);
-          gst_message_unref (msg); 
-	}
-	*/
-      //usleep(1000);
      
    }
 
