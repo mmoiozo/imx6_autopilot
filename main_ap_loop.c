@@ -147,6 +147,8 @@ int main (int argc, char **argv)//[]
  char recv = 0;
  //double alt = 0;
  
+ //Start named pipe to gstreamer process
+ init_gst_pipe();
  
  //SAFETY WAIT FOR THROTTLE SIGNAL AT LOWEST POSITION
  wait_signal();
@@ -159,7 +161,7 @@ int main (int argc, char **argv)//[]
 //start_720p_mpeg4(&argc,&argv);
    //start_720x960_record(argc,argv);
  
- 
+ int lag = 0;
  while(loop_status == 1)
    {
       
@@ -192,7 +194,8 @@ int main (int argc, char **argv)//[]
                 
                 //int16_t x_angle_d = (comp_angle_pitch * 10)-900;
                 //int16_t y_angle_d = (comp_angle_roll * 10)-900;
-                int16_t pitch_control_d = rec_com;//(int16_t)pitch_control;
+	      if(elapsed > 0.5)lag+=1;
+                int16_t pitch_control_d = lag;//wait_for_state_change;//rec_com;//(int16_t)pitch_control;
                 int16_t roll_control_d = pipeline_status;//y_com;//(int16_t)roll_control;
                 //int16_t altitude = (int16_t)(alt);i_cmd_pitch
                 int16_t altitude = alt;// (int16_t)(i_cmd_pitch);//check integral wind-up  
@@ -255,7 +258,7 @@ int main (int argc, char **argv)//[]
         
         write_log();//write log data at 2hz
        //check_pipeline_status();//check if pipeline has to be stopped or started
-        
+        check_gst_pipe();//check if pipeline has to be stopped or started
 	}
 	
 	//START MAIN LOOP CODE

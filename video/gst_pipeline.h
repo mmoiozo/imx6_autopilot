@@ -9,13 +9,10 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-extern gboolean initialize_pipeline(int *argc, char ***argv);
-extern int initialize_720p(int   *argc, char ***argv);
-void start_1080p_record(int   argc, char **argv[]);
+
 extern gboolean start_720p_mpeg4(int *argc, char ***argv);
-extern gboolean start_720p_record(int *argc, char ***argv);
+//extern gboolean start_720p_record(int *argc, char ***argv);
 extern gboolean start_720p_flip(int *argc, char ***argv);
-void start_720x960_record(int   argc, char **argv[]);
 void check_pipeline_status();
 
 gboolean bus_call (GstBus *bus, GstMessage *msg);
@@ -25,8 +22,5 @@ GstElement *pipeline, *videosrc, *srcq, *videoenc, *encq, *parse, *rtp, *sink, *
 
  GstCaps *caps_bayer, *caps_720, *caps_240, *caps_raw, *caps_ipu;
  
-extern int pipeline_status;
-extern int wait_for_state_change;
-
-extern void init_gst_pipe();
-extern void check_gst_pipe();
+int pipeline_status;
+int wait_for_state_change;

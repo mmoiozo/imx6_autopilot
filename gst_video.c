@@ -11,6 +11,8 @@
 #include "gst_video.h"
 #include "serial_com.h"
 
+#define MAX_BUF 4
+
 
 int pipeline_status = -1;//
 int wait_for_state_change = 0;//
@@ -19,6 +21,46 @@ GstState old_state, new_state;
 
 FILE *fp;
 
+
+int fd_tx;
+int fd_rx;
+char * myfifo = "/tmp/myfifo";
+char * tx_fifo = "/tmp/tx_fifo";
+char * rx_fifo = "/tmp/rx_fifo";
+char data_tx[4];
+char data_rx[4] = {0,0,0,0};
+int i = 0;
+
+void init_gst_pipe()
+{
+    /* create the FIFO (named pipe) */
+    mkfifo(tx_fifo, 0666);
+    
+    fd_rx = open(rx_fifo, O_RDONLY | O_NONBLOCK);
+    printf("open rx: %d\n", fd_rx);
+}
+
+void check_gst_pipe()
+{
+    i+=1;
+    data_tx[0]= (char)(rec_com);
+    data_tx[1]=0;
+    data_tx[2]=0;
+    data_tx[3]=0;
+    
+    fd_tx = open(tx_fifo, O_WRONLY | O_NONBLOCK);
+    int res = write(fd_tx, data_tx, sizeof(data_tx));
+   
+    close(fd_tx);
+    
+    res = read(fd_rx, data_rx, MAX_BUF);
+    if (res < 0)fd_rx = open(rx_fifo, O_RDONLY | O_NONBLOCK);
+    wait_for_state_change = data_rx[0];
+    pipeline_status = data_rx[1];
+    printf("Count: %d\n",i);
+    printf("Received: %d\n", data_rx[0]);
+  
+}
 
 void check_pipeline_status()
 {
