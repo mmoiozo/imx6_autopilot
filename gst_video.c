@@ -34,7 +34,7 @@ int i = 0;
 void init_gst_pipe()
 {
     /* create the FIFO (named pipe) */
-    mkfifo(tx_fifo, 0666);
+    mkfifo(tx_fifo, 0777);
     
     fd_rx = open(rx_fifo, O_RDONLY | O_NONBLOCK);
     printf("open rx: %d\n", fd_rx);

@@ -12,6 +12,8 @@
 
 extern gboolean start_720p_mpeg4(int *argc, char ***argv);
 //extern gboolean start_720p_record(int *argc, char ***argv);
+gboolean start_720p(int *argc, char ***argv);
+gboolean start_1080p(int *argc, char ***argv);
 extern gboolean start_720p_flip(int *argc, char ***argv);
 void check_pipeline_status();
 
