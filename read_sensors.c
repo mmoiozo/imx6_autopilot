@@ -103,6 +103,60 @@ float   log_roll_control   [150];
 int cooldown_count = 0;
 int start_cooldown = 0;
 
+int read_byte(char address, char reg)
+{
+	char buf[1];
+	if (ioctl(fd_i2c, I2C_SLAVE, address) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		//return 1;
+	}
+        buf[0]=reg;
+	write(fd_i2c, buf, 1);
+	
+	read(fd_i2c, buf, 1);
+	return buf[0]; 
+}
+
+int read_bytes(char address, char reg, char buf[], int len)
+{
+	char buffer[1];
+	if (ioctl(fd_i2c, I2C_SLAVE, address) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return -1;
+	}
+        buffer[0]=reg;
+	write(fd_i2c, buffer, 1);//??
+	
+	read(fd_i2c, buf, len);//?
+	return 1; 
+}
+
+int write_byte(char address, char reg, char value)
+{
+	char buf[2];
+	if (ioctl(fd_i2c, I2C_SLAVE, address) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return -1;
+	}
+        buf[0]=reg;
+	buf[1]=value;
+	write(fd_i2c, buf, 2);
+	return 1; 
+}
+
+int write_bytes(char address, char reg, char data_bufer[], int length)
+{
+	char buf[];
+	if (ioctl(fd_i2c, I2C_SLAVE, address) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return -1;
+	}
+        buf[0]=reg;
+	memcpy(buf+1,data_buffer,len);//?
+	write(fd_i2c, buf,len+1);//??
+	return 1; 
+}
+
 int initialize_sensors(int *all_connected)//void
 {
 	//i2c intialisation

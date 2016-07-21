@@ -196,10 +196,10 @@ int main (int argc, char **argv)//[]
                 //int16_t y_angle_d = (comp_angle_roll * 10)-900;
 	      //if(elapsed > 0.5)lag+=1;
 	      if((elapsed*1000)>lag)lag=(elapsed*1000);
-                int16_t pitch_control_d = wait_for_state_change;//rec_com;//(int16_t)pitch_control;
+                int16_t pitch_control_d = lag;//wait_for_state_change;//rec_com;//(int16_t)pitch_control;
                 int16_t roll_control_d = pipeline_status;//y_com;//(int16_t)roll_control;
                 //int16_t altitude = (int16_t)(alt);i_cmd_pitch
-                int16_t altitude = lag;// (int16_t)(i_cmd_pitch);//check integral wind-up  
+                int16_t altitude = alt;// (int16_t)(i_cmd_pitch);//check integral wind-up  
                 //int16_t refresh = loop_rate;
                 int16_t refresh = loop_rate_20;// (int16_t)(i_cmd_roll);
                 //int16_t connected = recv;
@@ -288,11 +288,11 @@ int main (int argc, char **argv)//[]
    }
 
  /*Out of the main loop, clean up nicely*/
- g_print ("Returned, stopping playback\n");
- gst_element_set_state (pipeline, GST_STATE_NULL);
- g_print ("Deleting pipeline\n");
- gst_object_unref (GST_OBJECT (pipeline));
- gst_object_unref (g_bus);
+ //g_print ("Returned, stopping playback\n");
+ //gst_element_set_state (pipeline, GST_STATE_NULL);
+ //g_print ("Deleting pipeline\n");
+ //gst_object_unref (GST_OBJECT (pipeline));
+ //gst_object_unref (g_bus);
 
 
  return 0;

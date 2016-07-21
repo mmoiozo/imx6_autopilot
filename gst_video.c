@@ -55,6 +55,8 @@ void check_gst_pipe()
     
     res = read(fd_rx, data_rx, MAX_BUF);
     if (res < 0)fd_rx = open(rx_fifo, O_RDONLY | O_NONBLOCK);
+    read(fd_rx, data_rx, MAX_BUF);
+    read(fd_rx, data_rx, MAX_BUF);//read two extra times to clear buffer
     wait_for_state_change = data_rx[0];
     pipeline_status = data_rx[1];
     printf("Count: %d\n",i);

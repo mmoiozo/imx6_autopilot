@@ -52,6 +52,14 @@ int main (int argc, char **argv)//[]
     /* open, read, and display the message from the FIFO */
     fd_tx = open(tx_fifo, O_RDONLY | O_NONBLOCK);
     printf("open tx at gst_pipeline: %d\n", fd_tx);
+    
+    fp = fopen("/home/alarm/log/gst_log.txt", "a");
+	//get system time
+	time_t t = time(NULL);
+	struct tm *tm = localtime(&t);
+	//printf("%s\n", asctime(tm));
+        fprintf(fp, "STARTING NEW GSTREAMER pipeline at: %s\n", asctime(tm));
+        fclose(fp);
   
   while(loop_status == 1)
    {
@@ -131,7 +139,7 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
     case GST_MESSAGE_EOS:
       g_print ("End of stream\n");
       
-      fp = fopen("log.txt", "a");
+      fp = fopen("/home/alarm/log/gst_log.txt", "a");
       fprintf(fp,"GST End of stream\n");
       fclose(fp);
       //loop_status = 0;
@@ -145,7 +153,7 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
       g_free (debug);
  
       g_printerr ("Error: %s\n", error->message);
-      fp = fopen("log.txt", "a");
+      fp = fopen("/home/alarm/log/gst_log.txt", "a");
       fprintf(fp,"GST Error: %s\n", error->message);
       fclose(fp);
       g_error_free (error);
@@ -162,7 +170,7 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
           gst_element_state_get_name (old_state),
           gst_element_state_get_name (new_state));
 	  
-	  fp = fopen("log.txt", "a");
+	  fp = fopen("/home/alarm/log/gst_log.txt", "a");
           fprintf(fp,"GST Element %s changed state from %s to %s.\n",
           GST_OBJECT_NAME (msg->src),
           gst_element_state_get_name (old_state),
@@ -175,7 +183,7 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
           break;
     default:
          g_printerr ("Unexpected message received.\n");
-	 fp = fopen("log.txt", "a");
+	 fp = fopen("/home/alarm/log/gst_log.txt", "a");
 	 fprintf(fp,"Uknown GST message: %s\n",GST_MESSAGE_TYPE_NAME(msg));
 	 fclose(fp);
       break;
