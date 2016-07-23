@@ -22,6 +22,7 @@
 //#define MPU_ADDR 0x69//b1101001 (pin AD0 is logic high)
 //#define BMP_ADDR 0x77// 1110111
 //#define HMC_ADDR 0x1E
+#define LOG_WRITE 0//Write data to log with chance on +700ms lag. (if zero max lag 23ms)
 
 int loop_status = 1;
 void uart_init();
@@ -195,13 +196,23 @@ int main (int argc, char **argv)//[]
                 //int16_t x_angle_d = (comp_angle_pitch * 10)-900;
                 //int16_t y_angle_d = (comp_angle_roll * 10)-900;
 	      //if(elapsed > 0.5)lag+=1;
+	      /*
 	      if((elapsed*1000)>lag)lag=(elapsed*1000);
                 int16_t pitch_control_d = lag;//wait_for_state_change;//rec_com;//(int16_t)pitch_control;
                 int16_t roll_control_d = pipeline_status;//y_com;//(int16_t)roll_control;
                 //int16_t altitude = (int16_t)(alt);i_cmd_pitch
-                int16_t altitude = alt;// (int16_t)(i_cmd_pitch);//check integral wind-up  
+                int16_t altitude = (press_pa-101000);//alt;// (int16_t)(i_cmd_pitch);//check integral wind-up  
                 //int16_t refresh = loop_rate;
                 int16_t refresh = loop_rate_20;// (int16_t)(i_cmd_roll);
+                //int16_t connected = recv;
+                int16_t connected = loop_rate;
+	      */
+	        int16_t pitch_control_d = comp_angle_pitch;//wait_for_state_change;//rec_com;//(int16_t)pitch_control;
+                int16_t roll_control_d = comp_angle_roll;//y_com;//(int16_t)roll_control;
+                //int16_t altitude = (int16_t)(alt);i_cmd_pitch
+                int16_t altitude = i_cmd_pitch;//alt;// (int16_t)(i_cmd_pitch);//check integral wind-up  
+                //int16_t refresh = loop_rate;
+                int16_t refresh = i_cmd_roll;// (int16_t)(i_cmd_roll);
                 //int16_t connected = recv;
                 int16_t connected = loop_rate;
                 
@@ -256,8 +267,9 @@ int main (int argc, char **argv)//[]
         fclose(fp);
         */
         }
-        
+#if LOG_WRITE
         write_log();//write log data at 2hz
+#endif
        //check_pipeline_status();//check if pipeline has to be stopped or started
         check_gst_pipe();//check if pipeline has to be stopped or started
 	}
@@ -268,9 +280,9 @@ int main (int argc, char **argv)//[]
         get_angles(elapsed);//get_angles(&comp_angle_x, &comp_angle_y, elapsed);
         link_check(loop_rate_20);//check if we have a good signal
         PID_cascaded(elapsed);//run the cascaded PID loop
-        
+#if LOG_WRITE
         log_data(elapsed,curr_time,loop_rate_20);//high speed logging
-        
+#endif
         if(gps_count > 12)
         {
             sc16_read();

@@ -290,9 +290,9 @@ void uart_read_nc(char *received)
                                 else if(rx_buffer[i]==133 && rx_buffer[i+1]==123 && rx_buffer[i+2]==116 && rx_buffer[i+3]==153)
                                 {
                                     //checksum 
-                                    int16_t chk_sum = (rx_buffer[i+15] << 8) | rx_buffer[i+14];
+                                    int16_t chk_sum = (rx_buffer[i+17] << 8) | rx_buffer[i+16];
                                     int16_t sum = 0;
-                                    for(int j = 4;j<14;j++)
+                                    for(int j = 4;j<16;j++)
                                     {
                                        sum += rx_buffer[i+j];
                                     }
@@ -310,6 +310,8 @@ void uart_read_nc(char *received)
                                     gain_i_Z = rx_buffer[i+11];
                                     gain_P_X_O = rx_buffer[i+12];
                                     gain_P_Y_O = rx_buffer[i+13];
+				    pitch_trim = rx_buffer[i+14];
+                                    roll_trim = rx_buffer[i+15];
                                     
                                     gain_recv = 1;
                                     
@@ -698,7 +700,7 @@ int debug_send(int16_t x_angle, int16_t y_angle, int16_t alt, int16_t loop_rate,
 void gain_send()
 {
     
-        unsigned char data_buffer[10];
+        unsigned char data_buffer[12];
         data_buffer[0] = gain_P_X;
         data_buffer[1] = gain_i_X;
         data_buffer[2] = gain_D_X;
@@ -709,17 +711,19 @@ void gain_send()
         data_buffer[7] = gain_i_Z;
         data_buffer[8] = gain_P_X_O;
         data_buffer[9] = gain_P_Y_O;
+	data_buffer[10] = pitch_trim;
+        data_buffer[11] = roll_trim;
       
         
         // merge two char into short
         //MyShort = (Char2 << 8) | Char1;
         
-        send_string("AT+CIPSEND=0,10\r\n");
+        send_string("AT+CIPSEND=0,12\r\n");
         usleep(5000);
         
         if (uart0_filestream != -1)
 	{
-		int count = write(uart0_filestream,data_buffer,10);  
+		int count = write(uart0_filestream,data_buffer,12);  
 		if (count < 0)
 		{
                     printf("UART TX error: %d \n",count);

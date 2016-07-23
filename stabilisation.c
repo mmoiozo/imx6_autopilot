@@ -9,8 +9,11 @@
 #include "PWM.h"//i2c PWM motor control 
 
 //Stabilisation defines
-#define PITCH_TRIM 6
-#define ROLL_TRIM 10
+//#define PITCH_TRIM 6
+//#define ROLL_TRIM 10
+
+//#define PITCH_I_TRIM 6
+//#define ROLL_I_TRIM 10
 
  uint8_t gain_P_X = 0;
  uint8_t gain_i_X = 0;
@@ -25,8 +28,10 @@
  
  uint8_t gain_P_X_O = 0;
  uint8_t gain_P_Y_O = 0;
-
  
+ uint8_t pitch_trim = 90;
+ uint8_t roll_trim = 90;
+
  
  float prev_error_pitch = 0;
  float prev_error_roll = 0;
@@ -104,9 +109,10 @@ void PID_cascaded(double delta_t)
     uint16_t motor_3 = 0;//left back  // anti clockwise
     uint16_t motor_4 = 0;//right back // clockwise
     
-    float command_angle_pitch = (((float)y_com)/100)+90+PITCH_TRIM;//6;//was +8
+    
+    float command_angle_pitch = (((float)y_com)/100)+pitch_trim;//+90+PITCH_TRIM;//6;//was +8
     //float command_angle_roll = (((float)x_com)/100) +90+10 ;//was -10
-    float command_angle_roll = (((float)-x_com)/100)+90+ROLL_TRIM;//10 ;
+    float command_angle_roll = (((float)-x_com)/100)+roll_trim;//+90+ROLL_TRIM;//10 ;
     
     float command_rate_pitch = (((float)y_com)*2);//no scaling 30 deg/sec is 30*130=3900 lsb
     float command_rate_roll = (((float)x_com)*2);//
@@ -120,12 +126,15 @@ void PID_cascaded(double delta_t)
     float p_cmd_pitch = error_pitch*((float)gain_P_X_O*2);//was gain_P_X
     float p_cmd_roll = error_roll*((float)gain_P_Y_O*2);
     
-    i_cmd_pitch += error_pitch*((float)gain_i_X/200)*delta_t;
-    if(i_cmd_pitch > 40)i_cmd_pitch = 40;//prevent integral windup
-    if(i_cmd_pitch < -40)i_cmd_pitch = -40;
-    i_cmd_roll += error_roll*((float)gain_i_Y/200)*delta_t;
-    if(i_cmd_roll > 40)i_cmd_roll = 40;//prevent integral windup
-    if(i_cmd_roll < -40)i_cmd_roll = -40;
+    if(t_com > -3200)
+    {
+    i_cmd_pitch += error_pitch*((float)gain_i_X*10)*delta_t;
+    if(i_cmd_pitch > 9000)i_cmd_pitch = 9000;//prevent integral windup was 40
+    if(i_cmd_pitch < -9000)i_cmd_pitch = -9000;
+    i_cmd_roll += error_roll*((float)gain_i_Y*10)*delta_t;
+    if(i_cmd_roll > 9000)i_cmd_roll = 9000;//prevent integral windup was 40
+    if(i_cmd_roll < -9000)i_cmd_roll = -9000;
+    }
     
     pitch_control_rate = p_cmd_pitch + i_cmd_pitch;
     roll_control_rate =  p_cmd_roll + i_cmd_roll;

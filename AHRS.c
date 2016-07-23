@@ -50,4 +50,13 @@ void get_alt()
   temp_deg = temp;
   press_pa = press;
   }
+  
+  //tilt compensated z acceleration
+  float x = sinf(comp_angle_pitch);//+-PI()
+  float y = cosf(comp_angle_roll);//+-PI()
+  float z = sqrtf(pow(x, 2) + pow(y, 2));
+  float a_comp = sqrtf(1 - pow(z, 2));
+    
+  
+  
 }

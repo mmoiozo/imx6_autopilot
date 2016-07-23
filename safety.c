@@ -12,7 +12,7 @@
 //Safety defines
 #define SAFETY_THROTTLE 500//-3276//temporary zero
 #define SAFETY_PITCH 0
-#define SAFETY_ROLL 400
+#define SAFETY_ROLL 0//400
 
 double start_time = 0;
 double elapsed = 0;

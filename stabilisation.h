@@ -15,6 +15,9 @@ extern uint8_t gain_i_Z;
 extern uint8_t gain_P_X_O;
 extern uint8_t gain_P_Y_O;
 
+extern uint8_t pitch_trim;
+extern uint8_t roll_trim;
+
 extern float pitch_control_rate;
 extern float roll_control_rate;
 

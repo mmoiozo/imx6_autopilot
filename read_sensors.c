@@ -103,7 +103,7 @@ float   log_roll_control   [150];
 int cooldown_count = 0;
 int start_cooldown = 0;
 
-int read_byte(char address, char reg)
+int read_i2c_byte(char address, char reg)
 {
 	char buf[1];
 	if (ioctl(fd_i2c, I2C_SLAVE, address) < 0) {
@@ -117,7 +117,7 @@ int read_byte(char address, char reg)
 	return buf[0]; 
 }
 
-int read_bytes(char address, char reg, char buf[], int len)
+int read_i2c_bytes(char address, char reg, char *buf, int len)
 {
 	char buffer[1];
 	if (ioctl(fd_i2c, I2C_SLAVE, address) < 0) {
@@ -131,7 +131,7 @@ int read_bytes(char address, char reg, char buf[], int len)
 	return 1; 
 }
 
-int write_byte(char address, char reg, char value)
+int write_i2c_byte(char address, char reg, char value)
 {
 	char buf[2];
 	if (ioctl(fd_i2c, I2C_SLAVE, address) < 0) {
@@ -144,9 +144,9 @@ int write_byte(char address, char reg, char value)
 	return 1; 
 }
 
-int write_bytes(char address, char reg, char data_bufer[], int length)
+int write_i2c_bytes(char address, char reg, char data_buffer[], int len)
 {
-	char buf[];
+	char buf[len+2];
 	if (ioctl(fd_i2c, I2C_SLAVE, address) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
 		return -1;
@@ -167,7 +167,7 @@ int initialize_sensors(int *all_connected)//void
 		printf("Error opening file: %s\n", strerror(errno));
 		return 1;
 	}
-
+/*
 	if (ioctl(fd_i2c, I2C_SLAVE, MPU_ADDR) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
 		return 1;
@@ -177,9 +177,11 @@ int initialize_sensors(int *all_connected)//void
 	write(fd_i2c, buffer, 1);
 	
 	read(fd_i2c, buffer, 1);
-	if(buffer[0] == 0x68){
+	*/
+	//if(buffer[0] == 0x68){
+	if(read_i2c_byte(MPU_ADDR,117) == 0x68){
 	*all_connected += 1;
-	printf("MPU 6050 IMU connected 0x%02X\n", buffer[0]);
+	printf("MPU 6050 IMU connected\n");
 	}
 	if (ioctl(fd_i2c, I2C_SLAVE, MPU_ADDR) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));

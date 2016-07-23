@@ -64,6 +64,8 @@ void check_gst_pipe()
   
 }
 
+/*
+
 void check_pipeline_status()
 {
         GstStateChangeReturn state_ret;
@@ -140,7 +142,7 @@ gboolean bus_call (GstBus *bus, GstMessage *msg)//static
       break;
     }
     case GST_MESSAGE_STATE_CHANGED:
-          /* We are only interested in state-changed messages from the pipeline */
+          // We are only interested in state-changed messages from the pipeline /
     
           gst_message_parse_state_changed (msg, &old_state, &new_state, NULL);
           g_print ("Element %s changed state from %s to %s.\n",
@@ -191,7 +193,7 @@ gboolean start_720p_mpeg4(int *argc, char ***argv)
    nano_str = "";
    printf ("This program is linked against GStreamer %d.%d.%d %s\n",major, minor, micro, nano_str);
 
-  /* Create gstreamer elements */
+  // Create gstreamer elements /
   pipeline = gst_pipeline_new ("video_testsrc");
   //videosrc = gst_element_factory_make ("videotestsrc", "videosrc");
   videosrc = gst_element_factory_make ("imxv4l2src", "videosrc");
@@ -223,7 +225,7 @@ gboolean start_720p_mpeg4(int *argc, char ***argv)
 
  g_bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 
-  /* we add all elements into the pipeline */
+  // we add all elements into the pipeline /
   gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, bayer1, bayerq1, bayer2, bayerq2, videoenc, encq, parse, mpegmux, sink, NULL);
   
   caps_bayer = gst_caps_new_simple ("video/x-bayer","width", G_TYPE_INT, 1280,"height", G_TYPE_INT, 720,NULL);
@@ -250,7 +252,7 @@ gboolean start_720p_mpeg4(int *argc, char ***argv)
   
   //gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
   gst_element_link_many (bayerq2, videoenc, encq, mpegmux, sink, NULL);
- /* Set the pipeline to "playing" state*/
+ // Set the pipeline to "playing" state/
   g_print ("Streaming to port: %s\n", argv);
   
   //gst_element_set_state (pipeline, GST_STATE_PLAYING);
@@ -299,7 +301,7 @@ gboolean initialize_pipeline(int *argc, char ***argv)
    nano_str = "";
    printf ("This program is linked against GStreamer %d.%d.%d %s\n",major, minor, micro, nano_str);
 
-  /* Create gstreamer elements */
+  // Create gstreamer elements /
   pipeline = gst_pipeline_new ("video_testsrc");
   videosrc = gst_element_factory_make ("videotestsrc", "videosrc");
   srcq = gst_element_factory_make ("queue", "srcq");
@@ -322,17 +324,17 @@ gboolean initialize_pipeline(int *argc, char ***argv)
 
  g_bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 
-  /* we add all elements into the pipeline */
+  // we add all elements into the pipeline /
   gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, videoenc, encq, parse, rtp, sink, NULL);
  
-  /* we link the elements together */
+  // we link the elements together /
   if(!link_elements_with_filter(videosrc, srcq))
 	{
         g_printerr ("Videosrc and srcq could not be linked.\n");
         return FALSE;
 	}
   gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
- /* Set the pipeline to "playing" state*/
+ // Set the pipeline to "playing" state/
   g_print ("Streaming to port: %s\n", argv);//argv[1]
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
   return TRUE;
@@ -359,7 +361,7 @@ int initialize_720p(int *argc, char ***argv)
    nano_str = "";
    printf ("This program is linked against GStreamer %d.%d.%d %s\n",major, minor, micro, nano_str);
 
-  /* Create gstreamer elements */
+  // Create gstreamer elements /
   pipeline = gst_pipeline_new ("video_testsrc");
   //videosrc = gst_element_factory_make ("videotestsrc", "videosrc");
   videosrc = gst_element_factory_make ("imxv4l2src", "videosrc");
@@ -389,7 +391,7 @@ int initialize_720p(int *argc, char ***argv)
 
  g_bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 
-  /* we add all elements into the pipeline */
+  // we add all elements into the pipeline /
   gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, bayer, bayerq, videoenc, encq, parse, rtp, sink, NULL);
   
   caps_bayer = gst_caps_new_simple ("video/x-bayer","width", G_TYPE_INT, 960,"height", G_TYPE_INT, 720,NULL);
@@ -424,10 +426,10 @@ int initialize_720p(int *argc, char ***argv)
 	}
 	*/
   
-  
+  /*
   //gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
   gst_element_link_many (bayerq, videoenc, encq, parse, rtp, sink, NULL);
- /* Set the pipeline to "playing" state*/
+ // Set the pipeline to "playing" state//
   g_print ("Streaming to port: %s\n", argv[1]);
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
@@ -453,7 +455,7 @@ int *ptr2 = &argv;
    nano_str = "";
    printf ("This program is linked against GStreamer %d.%d.%d %s\n",major, minor, micro, nano_str);
 
-  /* Create gstreamer elements */
+  // Create gstreamer elements /
   pipeline = gst_pipeline_new ("video_testsrc");
   //videosrc = gst_element_factory_make ("videotestsrc", "videosrc");
   videosrc = gst_element_factory_make ("imxv4l2src", "videosrc");
@@ -488,7 +490,7 @@ int *ptr2 = &argv;
 
  g_bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 
-  /* we add all elements into the pipeline */
+  // we add all elements into the pipeline /
   gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, bayer1, bayerq1, bayer2, bayerq2, videoenc, encq, parse, mpegmux, sink, NULL);
   
   caps_bayer = gst_caps_new_simple ("video/x-bayer","width", G_TYPE_INT, 1920,"height", G_TYPE_INT, 1080,NULL);
@@ -523,10 +525,10 @@ int *ptr2 = &argv;
 	}
 	*/
   
-  
+  /*
   //gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
   gst_element_link_many (bayerq2, videoenc, encq, parse, mpegmux, sink, NULL);
- /* Set the pipeline to "playing" state*/
+ // Set the pipeline to "playing" state
   g_print ("Streaming to port: %s\n", argv[1]);
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
@@ -552,7 +554,7 @@ gboolean start_720p_record(int *argc, char ***argv)
    nano_str = "";
    printf ("This program is linked against GStreamer %d.%d.%d %s\n",major, minor, micro, nano_str);
 
-  /* Create gstreamer elements */
+  // Create gstreamer elements /
   pipeline = gst_pipeline_new ("video_testsrc");
   //videosrc = gst_element_factory_make ("videotestsrc", "videosrc");
   videosrc = gst_element_factory_make ("imxv4l2src", "videosrc");
@@ -585,7 +587,7 @@ gboolean start_720p_record(int *argc, char ***argv)
 
  g_bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 
-  /* we add all elements into the pipeline */
+  // we add all elements into the pipeline /
   gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, bayer1, bayerq1, bayer2, bayerq2, videoenc, encq, parse, mpegmux, sink, NULL);
   
   caps_bayer = gst_caps_new_simple ("video/x-bayer","width", G_TYPE_INT, 1280,"height", G_TYPE_INT, 720,NULL);
@@ -612,7 +614,7 @@ gboolean start_720p_record(int *argc, char ***argv)
   
   //gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
   gst_element_link_many (bayerq2, videoenc, encq, parse, mpegmux, sink, NULL);
- /* Set the pipeline to "playing" state*/
+ // Set the pipeline to "playing" state/
   g_print ("Streaming to port: %s\n", argv);
   
   //gst_element_set_state (pipeline, GST_STATE_PLAYING);
@@ -641,7 +643,7 @@ gboolean start_720p_flip(int *argc, char ***argv)
    nano_str = "";
    printf ("This program is linked against GStreamer %d.%d.%d %s\n",major, minor, micro, nano_str);
 
-  /* Create gstreamer elements */
+  // Create gstreamer elements /
   pipeline = gst_pipeline_new ("video_testsrc");
   //videosrc = gst_element_factory_make ("videotestsrc", "videosrc");
   videosrc = gst_element_factory_make ("imxv4l2src", "videosrc");
@@ -677,7 +679,7 @@ gboolean start_720p_flip(int *argc, char ***argv)
 
  g_bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 
-  /* we add all elements into the pipeline */
+  // we add all elements into the pipeline /
   gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, bayer1, bayerq1, bayer2, bayerq2, flip, flipq, videoenc, encq, parse, mpegmux, sink, NULL);
   
   caps_bayer = gst_caps_new_simple ("video/x-bayer","width", G_TYPE_INT, 1280,"height", G_TYPE_INT, 720,NULL);
@@ -715,7 +717,7 @@ gboolean start_720p_flip(int *argc, char ***argv)
   
   //gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
   gst_element_link_many (flipq, videoenc, encq, parse, mpegmux, sink, NULL);
- /* Set the pipeline to "playing" state*/
+ // Set the pipeline to "playing" state
   g_print ("Streaming to port: %s\n", argv);
   
   //gst_element_set_state (pipeline, GST_STATE_PLAYING);
@@ -743,7 +745,7 @@ int *ptr2 = &argv;
    nano_str = "";
    printf ("This program is linked against GStreamer %d.%d.%d %s\n",major, minor, micro, nano_str);
 
-  /* Create gstreamer elements */
+  // Create gstreamer elements /
   pipeline = gst_pipeline_new ("video_testsrc");
   //videosrc = gst_element_factory_make ("videotestsrc", "videosrc");
   videosrc = gst_element_factory_make ("imxv4l2src", "videosrc");
@@ -775,7 +777,7 @@ int *ptr2 = &argv;
 
  g_bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
 
-  /* we add all elements into the pipeline */
+  // we add all elements into the pipeline /
   gst_bin_add_many (GST_BIN (pipeline), videosrc, srcq, bayer, bayerq, flip, flipq, videoenc, encq, parse, mpegmux, sink, NULL);
   
   caps_bayer = gst_caps_new_simple ("video/x-bayer","width", G_TYPE_INT, 960,"height", G_TYPE_INT, 720,NULL);
@@ -820,16 +822,16 @@ int *ptr2 = &argv;
 	}
 	*/
   
-  
+  /*
   //gst_element_link_many (srcq, videoenc, encq, parse, rtp, sink, NULL);
   gst_element_link_many (flipq, videoenc, encq, parse, mpegmux, sink, NULL);
- /* Set the pipeline to "playing" state*/
+ // Set the pipeline to "playing" state/
   g_print ("Streaming to port: %s\n", argv[1]);
   gst_element_set_state (pipeline, GST_STATE_PLAYING);
 }
 
 
-/*
+
 void start_1080p_record(int   argc, char **argv[])
 {
 
