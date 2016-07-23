@@ -128,10 +128,10 @@ void PID_cascaded(double delta_t)
     
     if(t_com > -3200)
     {
-    i_cmd_pitch += error_pitch*((float)gain_i_X*10)*delta_t;
+    i_cmd_pitch += error_pitch*((float)gain_i_X*1)*delta_t;
     if(i_cmd_pitch > 9000)i_cmd_pitch = 9000;//prevent integral windup was 40
     if(i_cmd_pitch < -9000)i_cmd_pitch = -9000;
-    i_cmd_roll += error_roll*((float)gain_i_Y*10)*delta_t;
+    i_cmd_roll += error_roll*((float)gain_i_Y*1)*delta_t;
     if(i_cmd_roll > 9000)i_cmd_roll = 9000;//prevent integral windup was 40
     if(i_cmd_roll < -9000)i_cmd_roll = -9000;
     }
