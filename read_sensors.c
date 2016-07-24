@@ -78,6 +78,7 @@ FILE *fp;
 struct timeval start_time,start,stop;
 double log_start_time = 0;
 int     log_count = 0;
+int     log_status = 0;
 int     log_count_array[150];
 float   log_time       [150];
 float   log_elapsed    [150];
@@ -641,11 +642,65 @@ int log_data(double delta_t, double current_time,float com_rate)
     
 }
 
+int log_data_single(double delta_t, double current_time,float com_rate)
+{
+    if(rec_com == 1)log_status = 1;
+    
+    
+    if(log_status == 1 && log_count < 149)
+    {
+        log_count_array[log_count] = log_count;
+        log_time       [log_count] = (float)(current_time - log_start_time);
+        log_elapsed    [log_count] = (float)delta_t;
+        log_com_rate   [log_count] = (float)com_rate;
+        log_gyro_x     [log_count] = x_gyro_raw;
+        log_gyro_y     [log_count] = y_gyro_raw;
+        log_gyro_z     [log_count] = z_gyro_raw;
+        log_acc_x      [log_count] = x_acc_raw;
+        log_acc_y      [log_count] = y_acc_raw;
+        log_acc_z      [log_count] = z_acc_raw;
+        log_pitch      [log_count] = comp_angle_pitch;
+        log_roll       [log_count] = comp_angle_roll;
+        log_alt        [log_count] = alt;
+        log_com_x      [log_count] = x_com;
+        log_com_y      [log_count] = y_com;
+        log_com_t      [log_count] = t_com;
+        log_rc_pitch   [log_count] = pitch_control_rate;
+        log_rc_roll    [log_count] = roll_control_rate;
+        log_pitch_control   [log_count] = pitch_control;
+        log_roll_control    [log_count] = roll_control;
+	
+	log_count +=1;
+	
+	if(log_count == 1)
+	{
+	time_t t = time(NULL);
+	struct tm *tm = localtime(&t);
+	fp = fopen("log.txt", "a");
+        fprintf(fp, "START LOGGING %s\n",asctime(tm));
+        fclose(fp);
+	}
+	
+	if(log_count == 149)
+	{
+	 write_log();
+	 fp = fopen("log.txt", "a");
+         fprintf(fp, "STOP LOGGING___________________________________________________________________________________\n");
+         fclose(fp); 
+	 log_status = 0;
+	}
+    
+        
+
+    }
+    
+}
+
 
 void write_log()
 {
-    if(flight_status == 1)
-    {
+    //if(flight_status == 1)
+    //{
         for(int i = 0;i < log_count;i++)
         {
             
@@ -657,7 +712,7 @@ void write_log()
             
         }
         log_count = 0;
-    }
+   // }
     
     if(start_cooldown == 1) cooldown_count+=1;
 }

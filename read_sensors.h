@@ -13,5 +13,6 @@ extern void hmc_init();
 int hmc_read(int16_t *x_mag, int16_t *y_mag, int16_t *z_mag);
 int sc16_read();
 
-void log_data(double delta_t, double current_time,float com_rate);
+int log_data(double delta_t, double current_time,float com_rate);
+int log_data_single(double delta_t, double current_time,float com_rate);
 void write_log();

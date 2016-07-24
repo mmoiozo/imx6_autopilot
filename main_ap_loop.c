@@ -283,6 +283,9 @@ int main (int argc, char **argv)//[]
 #if LOG_WRITE
         log_data(elapsed,curr_time,loop_rate_20);//high speed logging
 #endif
+#if !LOG-WRITE
+	log_data_single(elapsed,curr_time,loop_rate_20);
+#endif
         if(gps_count > 12)
         {
             sc16_read();
