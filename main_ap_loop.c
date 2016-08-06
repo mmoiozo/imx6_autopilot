@@ -13,6 +13,7 @@
 #include "read_sensors.h" //initializing and reading i2c sensors
 #include "serial_com.h" //initializing uart
 #include "AHRS.h"//Complementary filter AHRS
+#include "kalman_alt.h"//kalman filter fusion of barometer and accelerometer to altitude and speed
 #include "PWM.h"//i2c PWM motor control and init
 #include "spi_uart.h"//spi to uart driver
 #include "gst_video.h"//
@@ -22,7 +23,7 @@
 //#define MPU_ADDR 0x69//b1101001 (pin AD0 is logic high)
 //#define BMP_ADDR 0x77// 1110111
 //#define HMC_ADDR 0x1E
-#define LOG_WRITE 0//Write data to log with chance on +700ms lag. (if zero max lag 23ms)
+#define LOG_WRITE 1//Write data to log with chance on +700ms lag. (if zero max lag 23ms)
 
 int loop_status = 1;
 void uart_init();
@@ -252,7 +253,12 @@ int main (int argc, char **argv)//[]
       //printf("temp_deg: %d press_pa: %d Altitude: %f \n",temp_deg,press_pa,alt);
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
       //printf("Elapsed long: %f Loop rate HZ: %f current time %f link_status: %d \n", elapsed_long,loop_rate, curr_time,link_status);
-        //printf("Angle Pitch: %f Roll: %f Pitch control: %f Roll control: %f\n",comp_angle_pitch,comp_angle_roll,pitch_control,roll_control);
+      /*
+        printf("Accelerometer acceleration X: %d Y: %d Z: %d\n",x_acc_raw,y_acc_raw,z_acc_raw);
+	printf("Angle vector X: %f Y: %f Z: %f\n",x_angle_vec,y_angle_vec,z_angle_vec);
+	printf("Z acc comp: %f Z speed comp: %f\n",z_acc_comp,z_speed_comp);
+        printf("Angle Pitch: %f Roll: %f Pitch 2: %f Roll 2: %f\n",comp_angle_pitch,comp_angle_roll,comp_angle_pitch_2,comp_angle_roll_2);
+        */
         //printf("x joy: %d y joy: %d t joy: %d r joy: %d rec_com %d\n",x_com,y_com,t_com,r_com,rec_com);
        //printf("Pitch control: %f Roll control: %f Throttle command: %d Pitch command: %d\n",pitch_control,roll_control,t_com,y_com);
         //printf("x joy: %d y joy: %d t joy: %d r joy: %d\n",x_com,y_com,t_com,r_com);
@@ -276,7 +282,7 @@ int main (int argc, char **argv)//[]
 	
 	//START MAIN LOOP CODE
         
-        get_alt();
+        get_alt(elapsed);
         get_angles(elapsed);//get_angles(&comp_angle_x, &comp_angle_y, elapsed);
         link_check(loop_rate_20);//check if we have a good signal
         PID_cascaded(elapsed);//run the cascaded PID loop

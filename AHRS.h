@@ -13,7 +13,15 @@ extern int16_t z_gyro_raw;
 extern float comp_angle_roll;
 extern float comp_angle_pitch;
 
-extern double alt;
-extern int temp_deg;
-extern int press_pa;
-extern void get_alt();
+extern float comp_angle_roll_2;
+extern float comp_angle_pitch_2;
+
+extern float x_angle_vec;
+extern float y_angle_vec;
+extern float z_angle_vec;
+extern float z_acc_comp;
+extern float z_speed_comp;
+extern float z_acc_av;
+extern float delta_t;
+
+

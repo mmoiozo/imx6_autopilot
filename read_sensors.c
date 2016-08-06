@@ -88,7 +88,7 @@ int16_t log_gyro_y     [150];
 int16_t log_gyro_z     [150];
 int16_t log_acc_x      [150];
 int16_t log_acc_y      [150];
-int16_t log_acc_z      [150];
+float log_acc_z      [150];
 float   log_pitch      [150];
 float   log_roll       [150];
 float   log_alt        [150];
@@ -624,7 +624,7 @@ int log_data(double delta_t, double current_time,float com_rate)
         log_gyro_z     [log_count] = z_gyro_raw;
         log_acc_x      [log_count] = x_acc_raw;
         log_acc_y      [log_count] = y_acc_raw;
-        log_acc_z      [log_count] = z_acc_raw;
+        log_acc_z      [log_count] = z_acc_comp;//z_acc_raw;
         log_pitch      [log_count] = comp_angle_pitch;
         log_roll       [log_count] = comp_angle_roll;
         log_alt        [log_count] = alt;
@@ -658,7 +658,7 @@ int log_data_single(double delta_t, double current_time,float com_rate)
         log_gyro_z     [log_count] = z_gyro_raw;
         log_acc_x      [log_count] = x_acc_raw;
         log_acc_y      [log_count] = y_acc_raw;
-        log_acc_z      [log_count] = z_acc_raw;
+        log_acc_z      [log_count] = z_acc_comp;//z_acc_raw;
         log_pitch      [log_count] = comp_angle_pitch;
         log_roll       [log_count] = comp_angle_roll;
         log_alt        [log_count] = alt;
@@ -705,7 +705,7 @@ void write_log()
         {
             
         fp = fopen("log.txt", "a");
-        fprintf(fp,"%d %f %f %f %d %d %d %d %d %d %f %f %f %d %d %d %f %f %f %f \n",log_count_array[i],log_time[i],log_elapsed[i],log_com_rate[i],log_gyro_x[i],log_gyro_y[i]
+        fprintf(fp,"%d %f %f %f %d %d %d %d %d %f %f %f %f %d %d %d %f %f %f %f \n",log_count_array[i],log_time[i],log_elapsed[i],log_com_rate[i],log_gyro_x[i],log_gyro_y[i]
                 ,log_gyro_z[i],log_acc_x[i],log_acc_y[i],log_acc_z[i],log_pitch[i],log_roll[i],log_alt[i],log_com_x[i],log_com_y[i]
                 ,log_com_t[i], log_rc_pitch[i],log_rc_roll[i],log_pitch_control[i],log_roll_control[i]);
         fclose(fp);

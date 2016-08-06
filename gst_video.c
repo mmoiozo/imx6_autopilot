@@ -59,8 +59,8 @@ void check_gst_pipe()
     read(fd_rx, data_rx, MAX_BUF);//read two extra times to clear buffer
     wait_for_state_change = data_rx[0];
     pipeline_status = data_rx[1];
-    printf("Count: %d\n",i);
-    printf("Received: %d\n", data_rx[0]);
+    //printf("Count: %d\n",i);
+    //printf("Received: %d\n", data_rx[0]);
   
 }
 
