@@ -153,7 +153,7 @@ int main (int argc, char **argv)//[]
  init_gst_pipe();
  
  //SAFETY WAIT FOR THROTTLE SIGNAL AT LOWEST POSITION
- wait_signal();
+ //wait_signal();
  
    //START GSTREAMER PIPELINE//
    //initialize_720p(&argc,&argv);
@@ -253,6 +253,8 @@ int main (int argc, char **argv)//[]
       //printf("temp_deg: %d press_pa: %d Altitude: %f \n",temp_deg,press_pa,alt);
         //printf("pwm_counter: %d pwm_direction: %d pwm_count: %d\n",pwm_counter,pwm_direction,pwm_count);
       //printf("Elapsed long: %f Loop rate HZ: %f current time %f link_status: %d \n", elapsed_long,loop_rate, curr_time,link_status);
+      printf("Altitude: %f V speed: %f  Press alt:%f \n",opt_alt,opt_v_speed,alt);
+      
       /*
         printf("Accelerometer acceleration X: %d Y: %d Z: %d\n",x_acc_raw,y_acc_raw,z_acc_raw);
 	printf("Angle vector X: %f Y: %f Z: %f\n",x_angle_vec,y_angle_vec,z_angle_vec);

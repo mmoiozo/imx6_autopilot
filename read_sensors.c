@@ -13,6 +13,7 @@
 #include "AHRS.h"
 #include "serial_com.h"
 #include "stabilisation.h"
+#include "kalman_alt.h"
 
 #define MPU_ADDR 0x69//b1101001 (pin AD0 is logic high)
 #define BMP_ADDR 0x77// 1110111

@@ -13,28 +13,10 @@ float opt_alt = 0;
 float opt_v_speed = 0;
 
 
-void print_arr(int m[2][2],int row,int col);//proto
-void print_vec(int vec[2],int n);
-void print_arr_f(float m[2][2],int row,int col);
-void print_vec_f(float vec[2],int n);
-void transpose_arr(float m1[2][2],float m2[2][2],int row,int col);
-void mul_arr(float m1[2][2],float m2[2][2],float m3[2][2],int row,int col);
-void add_arr(float m1[2][2],float m2[2][2],float m3[2][2],int row,int col);
-void sub_arr(float m1[2][2],float m2[2][2],float m3[2][2],int row,int col);
-void mul_mat_vec(float m1[2][2],float v1[2],float v2[2],int row,int col);
-void sub_vec(float v1[2],float v2[2],float v3[2]);
-void add_vec(float v1[2],float v2[2],float v3[2])
-void mul_vec(float v1[2],float v2[2],float c);
-void mat_inv(float m1[2][2],float m2[2][2]);
-
-void vec_vec_t(float v1[2],float v2[2],float m1[2][2],int row,int col);
-float vec_t_vec(float v1[2],float v2[2]);
-
-
    
    float vec_1[2] = {1,2};
    float vec_2[2] = {2,1};
-   float trans_mat[2][2];
+   //float trans_mat[2][2];
    
    float res_vec_1[2];// = {0,0,0};
    float res_vec_2[2];
@@ -71,11 +53,13 @@ float vec_t_vec(float v1[2],float v2[2]);
    {0, 1}     }; 
    
    
+   
+   
 void get_alt(double dt)
 {
   long temp = 0;
   long press = 0;
-  double po = 102100;//de bilt //101325;//icao
+  double po = 102500;// 102100;//de bilt //101325;//icao
   
     /*
     if(acc_count < 1500)
@@ -100,58 +84,15 @@ void get_alt(double dt)
     alt = 44330*( 1-pow(((double)press/po),0.19029)); //in meters
     temp_deg = temp;
     press_pa = press;
-    z_acc_av /= delta_t
-    //calc_alt();
+    z_acc_av /= delta_t;
+    calc_alt();
     z_acc_av = 0;
     delta_t  = 0;
     }
   
 }
    
-   //Kalman filter altitude and vertical speed calculation
-   void calc_alt()
-   {
-     PHI[1][1] = delta_t;
-     PSI[1]    = delta_t;
-     GAMMA[1]  = delta_t;
-     
-     //state prediction
-     mul_vec(PSI,res_vec_1,z_acc_av);
-     mul_mat_vec(PHI,x_opt,res_vec_2,2,2);
-     add_vec(res_vec_1,res_vec_2,x_pred);
-     
-     //covariance prediction
-     transpose_arr(PHI,res_mat_1,2,2);
-     mul_arr(P,res_mat_1,res_mat_2,2,2);
-     mul_arr(PHI,res_mat_2,res_mat_1,2,2);
-     
-     mul_vec(GAMMA,res_vec_1,Q);
-     vec_vec_t(res_vec_1,GAMMA,res_mat_2,2,2);
-     
-     add_arr(res_mat_1,res_mat_2,P_1,2,2);
-     
-     //kalman gain calculation
-     mul_mat_vec(P_1,H,res_vec_1,2,2);
-     float res = vec_t_vec(H,res_vec_1);
-     float inv = 1/(res+R);
-     
-     mul_vec(H,res_vec_1,inv);
-     mul_mat_vec(P_1,res_vec_1,K,2,2);
-     
-     //optimal state
-     float diff = alt-x_opt[0];
-     mul_vec(K,res_vec_1,diff);
-     add_vec(res_vec_1,x_pred,x_opt);
-     
-     opt_alt     = x_opt[0];
-     opt_v_speed = x_opt[1];
-     
-     //optimal covariance update
-     vec_vec_t(K,H,res_mat_1,2,2);
-     sub_arr(eye,res_mat_1,res_mat_2,2,2);
-     mul_arr(res_mat_1,P_1,P,2,2);
-     
-   }
+   
   /*
    printf("print test:\n");
    print_arr_f(mat,2,2);
@@ -223,8 +164,9 @@ void get_alt(double dt)
 void mul_mat_vec(float m1[2][2],float v1[2],float v2[2],int row,int col)
 {
     int i,j,k;
-    memset(v2, 0,sizeof(v2)*sizeof(v2[0]));//set res vector to zero
-    
+    //memset(v2, 0,sizeof(v2)*sizeof(v2[0]));//set res vector to zero
+    v2[0]=0;
+    v2[1]=0;
     for(i=0;i<row;i++)
     {
       for(j=0;j<col;j++)
@@ -238,7 +180,11 @@ void mul_mat_vec(float m1[2][2],float v1[2],float v2[2],int row,int col)
 void mul_arr(float m1[2][2],float m2[2][2],float m3[2][2],int row,int col)
 {
     int i,j,k;
-    memset(m3, 0, row*col*sizeof m3[0][0]);//set res matrix to zero
+    //memset(m3, 0, row*col*sizeof m3[0][0]);//set res matrix to zero
+    m3[0][0] = 0;
+    m3[0][1] = 0;
+    m3[1][0] = 0;
+    m3[1][1] = 0;
     for(i=0;i<row;i++)
     {
       for(j=0;j<col;j++)
@@ -254,7 +200,11 @@ void mul_arr(float m1[2][2],float m2[2][2],float m3[2][2],int row,int col)
 void vec_vec_t(float v1[2],float v2[2],float m1[2][2],int row,int col)
 {
     int i,j,k;
-    memset(m1, 0, row*col*sizeof m1[0][0]);//set res matrix to zero
+    //memset(m1, 0, row*col*sizeof m1[0][0]);//set res matrix to zero
+    m1[0][0] = 0;
+    m1[0][1] = 0;
+    m1[1][0] = 0;
+    m1[1][1] = 0;
     for(i=0;i<row;i++)
     {
       for(j=0;j<col;j++)
@@ -421,4 +371,65 @@ void print_vec_f(float vec[2],int n)
         }
 }
 
+//Kalman filter altitude and vertical speed calculation
+   void calc_alt()
+   {
+     PHI[0][1] = delta_t;
+     PSI[1]    = delta_t;
+     GAMMA[1]  = delta_t;
+     
+     //printf("Z acc av: %f delta_t: %f\n",z_acc_av,delta_t);
+     
+     //state prediction
+     mul_vec(PSI,res_vec_1,z_acc_av);
+     //print_vec_f(res_vec_1,2);
+     mul_mat_vec(PHI,x_opt,res_vec_2,2,2);
+     //print_arr_f(PHI,2,2);
+    // printf("x_opt\n");
+     //print_vec_f(x_opt,2);
+     //printf("res vec 1\n");
+     //print_vec_f(res_vec_1,2);
+     //printf("res vec 2\n");
+     //print_vec_f(res_vec_2,2);
+     add_vec(res_vec_1,res_vec_2,x_pred);
+     //printf("x_pred\n");
+     //print_vec_f(x_pred,2);
+     
+     //add_vec(vec_1,vec_2,res_vec_1);
+     //printf("res vec 1\n");
+     //print_vec_f(res_vec_1,2);
+     
+     //covariance prediction
+     transpose_arr(PHI,res_mat_1,2,2);
+     mul_arr(P,res_mat_1,res_mat_2,2,2);
+     mul_arr(PHI,res_mat_2,res_mat_1,2,2);
+     
+     mul_vec(GAMMA,res_vec_1,Q);
+     vec_vec_t(res_vec_1,GAMMA,res_mat_2,2,2);
+     
+     add_arr(res_mat_1,res_mat_2,P_1,2,2);
+     
+     //kalman gain calculation
+     mul_mat_vec(P_1,H,res_vec_1,2,2);
+     float res = 0;
+     res = vec_t_vec(H,res_vec_1);
+     float inv = 1/(res+R);
+     
+     mul_vec(H,res_vec_1,inv);
+     mul_mat_vec(P_1,res_vec_1,K,2,2);
+     
+     //optimal state
+     float diff = alt-x_opt[0];
+     mul_vec(K,res_vec_1,diff);
+     add_vec(res_vec_1,x_pred,x_opt);
+     
+     opt_alt     = x_opt[0];
+     opt_v_speed = x_opt[1];
+     
+     //optimal covariance update
+     vec_vec_t(K,H,res_mat_1,2,2);
+     sub_arr(eye,res_mat_1,res_mat_2,2,2);
+     mul_arr(res_mat_1,P_1,P,2,2);
+     
+   }
 
